@@ -1,0 +1,286 @@
+{
+  "doshas": [
+    {
+      "type": "vata",
+      "name": "Vata",
+      "elements": ["air", "ether"],
+      "qualities": ["dry", "light", "cold", "rough", "subtle", "mobile"],
+      "physicalTraits": [
+        "Thin, light frame",
+        "Dry skin and hair",
+        "Cold hands and feet",
+        "Light, interrupted sleep",
+        "Irregular appetite"
+      ],
+      "mentalTraits": [
+        "Quick thinking",
+        "Creative and imaginative",
+        "Enthusiastic and lively",
+        "Prone to anxiety and worry",
+        "Variable moods"
+      ],
+      "imbalanceSigns": [
+        "Constipation",
+        "Dry skin",
+        "Insomnia",
+        "Anxiety",
+        "Weight loss",
+        "Joint pain",
+        "Bloating and gas"
+      ],
+      "balancingFoods": {
+        "tastes": ["madhura", "amla", "lavana"],
+        "qualities": ["warm", "oily", "heavy"],
+        "categories": ["grains", "dairy", "oils", "nuts_seeds"]
+      },
+      "aggravatingFoods": {
+        "tastes": ["katu", "tikta", "kashaya"],
+        "qualities": ["cold", "dry", "light"],
+        "categories": []
+      },
+      "seasonalTendency": {
+        "increases": ["sharad", "hemanta"],
+        "decreases": ["vasanta", "grishma"]
+      }
+    },
+    {
+      "type": "pitta",
+      "name": "Pitta",
+      "elements": ["fire", "water"],
+      "qualities": ["hot", "sharp", "light", "liquid", "oily", "spreading"],
+      "physicalTraits": [
+        "Medium build, well-proportioned",
+        "Warm body temperature",
+        "Strong appetite",
+        "Moderate sleep, sound",
+        "Sensitive skin, prone to rashes"
+      ],
+      "mentalTraits": [
+        "Sharp intellect",
+        "Natural leaders",
+        "Goal-oriented",
+        "Prone to anger and irritability",
+        "Competitive nature"
+      ],
+      "imbalanceSigns": [
+        "Acid reflux, heartburn",
+        "Skin rashes and inflammation",
+        "Excessive sweating",
+        "Irritability and anger",
+        "Diarrhea",
+        "Burning sensations"
+      ],
+      "balancingFoods": {
+        "tastes": ["madhura", "tikta", "kashaya"],
+        "qualities": ["cool", "heavy", "dry"],
+        "categories": ["vegetables", "fruits", "dairy"]
+      },
+      "aggravatingFoods": {
+        "tastes": ["katu", "amla", "lavana"],
+        "qualities": ["hot", "oily", "light"],
+        "categories": ["spices"]
+      },
+      "seasonalTendency": {
+        "increases": ["grishma", "sharad"],
+        "decreases": ["hemanta", "shishira"]
+      }
+    },
+    {
+      "type": "kapha",
+      "name": "Kapha",
+      "elements": ["earth", "water"],
+      "qualities": ["heavy", "slow", "cold", "oily", "smooth", "dense", "stable"],
+      "physicalTraits": [
+        "Solid, heavy frame",
+        "Smooth, oily skin",
+        "Thick, lustrous hair",
+        "Deep, prolonged sleep",
+        "Slow but steady appetite"
+      ],
+      "mentalTraits": [
+        "Calm and steady",
+        "Compassionate and loving",
+        "Good long-term memory",
+        "Prone to attachment",
+        "Resistant to change"
+      ],
+      "imbalanceSigns": [
+        "Weight gain",
+        "Lethargy and sluggishness",
+        "Excessive mucus",
+        "Depression",
+        "Water retention",
+        "Oversleeping"
+      ],
+      "balancingFoods": {
+        "tastes": ["katu", "tikta", "kashaya"],
+        "qualities": ["light", "dry", "warm"],
+        "categories": ["vegetables", "pulses", "spices"]
+      },
+      "aggravatingFoods": {
+        "tastes": ["madhura", "amla", "lavana"],
+        "qualities": ["heavy", "oily", "cold"],
+        "categories": ["dairy", "sweets", "oils"]
+      },
+      "seasonalTendency": {
+        "increases": ["vasanta", "shishira"],
+        "decreases": ["grishma", "sharad"]
+      }
+    }
+  ],
+  "rasas": [
+    {
+      "name": "madhura",
+      "english": "Sweet",
+      "elements": ["earth", "water"],
+      "effect": {
+        "vata": -1,
+        "pitta": -1,
+        "kapha": 1
+      },
+      "qualities": ["cooling", "oily", "heavy"],
+      "benefits": ["Nourishing", "Strengthening", "Promotes tissue building"],
+      "excess": ["Weight gain", "Lethargy", "Diabetes"]
+    },
+    {
+      "name": "amla",
+      "english": "Sour",
+      "elements": ["earth", "fire"],
+      "effect": {
+        "vata": -1,
+        "pitta": 1,
+        "kapha": 1
+      },
+      "qualities": ["heating", "oily", "light"],
+      "benefits": ["Stimulates appetite", "Aids digestion", "Energizing"],
+      "excess": ["Acidity", "Skin problems", "Burning sensations"]
+    },
+    {
+      "name": "lavana",
+      "english": "Salty",
+      "elements": ["water", "fire"],
+      "effect": {
+        "vata": -1,
+        "pitta": 1,
+        "kapha": 1
+      },
+      "qualities": ["heating", "oily", "heavy"],
+      "benefits": ["Enhances taste", "Aids digestion", "Maintains electrolyte balance"],
+      "excess": ["Water retention", "Hypertension", "Skin issues"]
+    },
+    {
+      "name": "katu",
+      "english": "Pungent",
+      "elements": ["fire", "air"],
+      "effect": {
+        "vata": 1,
+        "pitta": 1,
+        "kapha": -1
+      },
+      "qualities": ["heating", "dry", "light"],
+      "benefits": ["Stimulates digestion", "Clears congestion", "Improves circulation"],
+      "excess": ["Burning sensations", "Dryness", "Anger"]
+    },
+    {
+      "name": "tikta",
+      "english": "Bitter",
+      "elements": ["air", "ether"],
+      "effect": {
+        "vata": 1,
+        "pitta": -1,
+        "kapha": -1
+      },
+      "qualities": ["cooling", "dry", "light"],
+      "benefits": ["Detoxifying", "Anti-inflammatory", "Reduces fever"],
+      "excess": ["Depletion", "Anxiety", "Dryness"]
+    },
+    {
+      "name": "kashaya",
+      "english": "Astringent",
+      "elements": ["air", "earth"],
+      "effect": {
+        "vata": 1,
+        "pitta": -1,
+        "kapha": -1
+      },
+      "qualities": ["cooling", "dry", "heavy"],
+      "benefits": ["Tightening tissues", "Stops bleeding", "Reduces secretions"],
+      "excess": ["Constipation", "Gas", "Dryness"]
+    }
+  ],
+  "seasons": [
+    {
+      "name": "vasanta",
+      "english": "Spring",
+      "months": ["March", "April"],
+      "dominantDosha": "kapha",
+      "dietaryGuidelines": [
+        "Favor light, dry, warm foods",
+        "Reduce dairy and sweets",
+        "Use heating spices like ginger and black pepper",
+        "Avoid heavy, oily foods"
+      ]
+    },
+    {
+      "name": "grishma",
+      "english": "Summer",
+      "months": ["May", "June"],
+      "dominantDosha": "pitta",
+      "dietaryGuidelines": [
+        "Favor sweet, cool, liquid foods",
+        "Avoid hot, spicy, sour foods",
+        "Drink plenty of water and coconut water",
+        "Include cooling herbs like coriander and mint"
+      ]
+    },
+    {
+      "name": "varsha",
+      "english": "Monsoon",
+      "months": ["July", "August"],
+      "dominantDosha": "vata",
+      "dietaryGuidelines": [
+        "Favor warm, light, easily digestible foods",
+        "Use digestive spices like cumin and ginger",
+        "Avoid raw foods and salads",
+        "Include sour and salty tastes moderately"
+      ]
+    },
+    {
+      "name": "sharad",
+      "english": "Autumn",
+      "months": ["September", "October"],
+      "dominantDosha": "pitta",
+      "dietaryGuidelines": [
+        "Favor sweet, bitter, astringent foods",
+        "Avoid sour, salty, pungent foods",
+        "Include cooling foods like cucumber and pomegranate",
+        "Light fasting is beneficial"
+      ]
+    },
+    {
+      "name": "hemanta",
+      "english": "Early Winter",
+      "months": ["November", "December"],
+      "dominantDosha": "vata",
+      "dietaryGuidelines": [
+        "Favor warm, nourishing, oily foods",
+        "Include sweet, sour, salty tastes",
+        "Use ghee and sesame oil liberally",
+        "Eat heavier meals, good digestion period"
+      ]
+    },
+    {
+      "name": "shishira",
+      "english": "Late Winter",
+      "months": ["January", "February"],
+      "dominantDosha": "kapha",
+      "dietaryGuidelines": [
+        "Similar to Hemanta but gradually reduce heavy foods",
+        "Include warming spices",
+        "Maintain good digestive fire",
+        "Avoid excessive cold foods"
+      ]
+    }
+  ]
+}
+

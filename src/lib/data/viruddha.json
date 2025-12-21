@@ -1,0 +1,169 @@
+[
+  {
+    "id": "fish_milk",
+    "food1": "fish_rohu",
+    "food2": "milk_cow",
+    "category1": "seafood",
+    "category2": "dairy",
+    "type": "samyoga",
+    "severity": "severe",
+    "reason": "Fish and milk together can cause vitiation of blood (Rakta Dushti), leading to skin diseases like leucoderma, eczema, and other skin disorders. Both have different Virya and post-digestive effects.",
+    "reference": "Charaka Samhita, Sutrasthana 26"
+  },
+  {
+    "id": "honey_ghee_equal",
+    "food1": "honey",
+    "food2": "ghee",
+    "type": "matra",
+    "severity": "severe",
+    "reason": "Honey and ghee in equal quantities by weight is considered toxic (Gara Visha). They can be combined but only in unequal proportions.",
+    "reference": "Charaka Samhita, Sutrasthana 26"
+  },
+  {
+    "id": "honey_hot_water",
+    "food1": "honey",
+    "food2": "hot_water",
+    "type": "samskara",
+    "severity": "severe",
+    "reason": "Heating honey or mixing with hot water makes it toxic. Honey should never be heated above 40°C as it creates ama (toxins) in the body.",
+    "reference": "Ashtanga Hridaya"
+  },
+  {
+    "id": "milk_banana",
+    "food1": "milk_cow",
+    "food2": "banana",
+    "type": "samyoga",
+    "severity": "moderate",
+    "reason": "This combination can diminish digestive fire, produce toxins, and may cause congestion, cold, cough, and allergies. Despite being popular, it's considered incompatible.",
+    "reference": "Charaka Samhita"
+  },
+  {
+    "id": "milk_citrus",
+    "food1": "milk_cow",
+    "food2": "citrus_fruits",
+    "category2": "fruits",
+    "type": "virya",
+    "severity": "moderate",
+    "reason": "Milk is cooling while citrus fruits are heating and sour. This combination can curdle milk in the stomach, causing indigestion and toxin formation.",
+    "reference": "Ayurvedic texts"
+  },
+  {
+    "id": "yogurt_night",
+    "food1": "yogurt",
+    "food2": "night_time",
+    "type": "kala",
+    "severity": "moderate",
+    "reason": "Yogurt consumed at night increases Kapha, leading to congestion, mucus formation, and can aggravate respiratory issues. Best consumed during daytime, preferably lunch.",
+    "reference": "Ashtanga Hridaya"
+  },
+  {
+    "id": "yogurt_hot_foods",
+    "food1": "yogurt",
+    "food2": "hot_preparations",
+    "type": "virya",
+    "severity": "moderate",
+    "reason": "Heating yogurt or combining with hot foods destroys its beneficial probiotics and can create toxins. Raita should be room temperature.",
+    "reference": "Ayurvedic principles"
+  },
+  {
+    "id": "milk_salt",
+    "food1": "milk_cow",
+    "food2": "salt",
+    "type": "virya",
+    "severity": "moderate",
+    "reason": "Salt and milk have opposite qualities (Virya Viruddha). This combination can cause skin diseases and weaken body tissues over time.",
+    "reference": "Charaka Samhita"
+  },
+  {
+    "id": "milk_radish",
+    "food1": "milk_cow",
+    "food2": "radish",
+    "type": "samyoga",
+    "severity": "moderate",
+    "reason": "Radish is heating and pungent while milk is cooling and sweet. This combination can cause skin disorders and digestive issues.",
+    "reference": "Ayurvedic texts"
+  },
+  {
+    "id": "ghee_honey_water",
+    "food1": "ghee",
+    "food2": "honey",
+    "type": "samyoga",
+    "severity": "severe",
+    "reason": "Ghee, honey, and water in equal proportions creates a toxic combination. While ghee and honey can be combined, adding water in equal amounts is contraindicated.",
+    "reference": "Sushruta Samhita"
+  },
+  {
+    "id": "melon_water",
+    "food1": "melon",
+    "food2": "water",
+    "type": "krama",
+    "severity": "mild",
+    "reason": "Drinking water immediately after eating melon dilutes digestive juices and can cause digestive issues. Wait at least 30 minutes.",
+    "reference": "Ayurvedic practice"
+  },
+  {
+    "id": "fruit_meals",
+    "food1": "fruits_general",
+    "food2": "cooked_meals",
+    "type": "krama",
+    "severity": "mild",
+    "reason": "Fruits digest quickly and should not be eaten with or immediately after heavy meals. This causes fermentation and gas formation.",
+    "reference": "Ayurvedic principles"
+  },
+  {
+    "id": "cold_drinks_meals",
+    "food1": "cold_drinks",
+    "food2": "hot_meals",
+    "type": "virya",
+    "severity": "moderate",
+    "reason": "Cold drinks with hot meals extinguish digestive fire (Agni Mandya), leading to poor digestion, toxin accumulation, and metabolic issues.",
+    "reference": "Ayurvedic principles"
+  },
+  {
+    "id": "milk_meat",
+    "food1": "milk_cow",
+    "food2": "chicken",
+    "category2": "meat",
+    "type": "samyoga",
+    "severity": "severe",
+    "reason": "Milk and meat have contradictory qualities. This combination can block body channels (Srotas) and create serious metabolic disturbances.",
+    "reference": "Charaka Samhita"
+  },
+  {
+    "id": "potato_yogurt",
+    "food1": "potato",
+    "food2": "yogurt",
+    "type": "samyoga",
+    "severity": "mild",
+    "reason": "Potato is heavy and starchy, yogurt is sour and heavy. Together they can aggravate Kapha and slow down digestion significantly.",
+    "reference": "Ayurvedic practice"
+  },
+  {
+    "id": "tomato_cucumber",
+    "food1": "tomato",
+    "food2": "cucumber",
+    "type": "samyoga",
+    "severity": "mild",
+    "reason": "Tomato is acidic and heating, cucumber is alkaline and cooling. Combined frequently can disturb digestion though occasional use is acceptable.",
+    "reference": "Modern Ayurvedic interpretation"
+  },
+  {
+    "id": "egg_milk",
+    "food1": "egg",
+    "food2": "milk_cow",
+    "type": "samyoga",
+    "severity": "moderate",
+    "reason": "Both are heavy, protein-rich foods that can overburden digestion. This combination can create ama (toxins) and aggravate Kapha.",
+    "reference": "Ayurvedic principles"
+  },
+  {
+    "id": "tea_meals",
+    "food1": "green_tea",
+    "food2": "meals_general",
+    "type": "krama",
+    "severity": "mild",
+    "reason": "Tea (especially green/black) contains tannins that can interfere with iron absorption. Should be consumed at least 1 hour after meals.",
+    "reference": "Ayurvedic and modern nutrition"
+  }
+]
+

@@ -1,0 +1,229 @@
+[
+  {
+    "id": "diabetes",
+    "name": "Diabetes (Type 2)",
+    "nameAyurvedic": "Prameha / Madhumeha",
+    "description": "A metabolic condition characterized by elevated blood sugar levels due to insulin resistance or deficiency.",
+    "affectedDoshas": ["kapha", "pitta"],
+    "recommendedNutrients": [
+      { "nutrient": "fiber", "direction": "increase", "targetRange": { "min": 25, "max": 40 }, "unit": "g/day" },
+      { "nutrient": "sugar", "direction": "decrease", "targetRange": { "min": 0, "max": 25 }, "unit": "g/day" },
+      { "nutrient": "protein", "direction": "increase", "targetRange": { "min": 50, "max": 80 }, "unit": "g/day" },
+      { "nutrient": "chromium", "direction": "increase", "unit": "mcg" }
+    ],
+    "avoidFoodCategories": ["sweets"],
+    "recommendedFoodCategories": ["vegetables", "pulses", "spices"],
+    "dietaryGuidelines": [
+      "Favor bitter foods like karela (bitter gourd) and methi (fenugreek)",
+      "Include whole grains instead of refined grains",
+      "Use turmeric, cinnamon, and fenugreek seeds",
+      "Avoid sweet fruits, prefer low glycemic options",
+      "Include barley, moong dal, and green leafy vegetables",
+      "Reduce dairy except for buttermilk"
+    ]
+  },
+  {
+    "id": "hypertension",
+    "name": "Hypertension",
+    "nameAyurvedic": "Rakta Gata Vata / Uccha Raktachapa",
+    "description": "Persistent elevation of blood pressure in the arteries.",
+    "affectedDoshas": ["vata", "pitta"],
+    "recommendedNutrients": [
+      { "nutrient": "sodium", "direction": "decrease", "targetRange": { "min": 0, "max": 1500 }, "unit": "mg/day" },
+      { "nutrient": "potassium", "direction": "increase", "targetRange": { "min": 3500, "max": 4700 }, "unit": "mg/day" },
+      { "nutrient": "magnesium", "direction": "increase", "unit": "mg" }
+    ],
+    "avoidFoodCategories": [],
+    "recommendedFoodCategories": ["vegetables", "fruits"],
+    "dietaryGuidelines": [
+      "Strictly limit salt intake",
+      "Include potassium-rich foods like banana, coconut water",
+      "Favor cooling, calming foods",
+      "Avoid spicy, sour, and salty foods",
+      "Include garlic (lahsun) in moderate amounts",
+      "Practice regular meal timings"
+    ]
+  },
+  {
+    "id": "obesity",
+    "name": "Obesity",
+    "nameAyurvedic": "Sthaulya / Medoroga",
+    "description": "Excessive accumulation of body fat leading to health issues.",
+    "affectedDoshas": ["kapha"],
+    "recommendedNutrients": [
+      { "nutrient": "calories", "direction": "decrease", "unit": "kcal" },
+      { "nutrient": "fiber", "direction": "increase", "targetRange": { "min": 30, "max": 45 }, "unit": "g/day" },
+      { "nutrient": "protein", "direction": "increase", "targetRange": { "min": 60, "max": 100 }, "unit": "g/day" }
+    ],
+    "avoidFoodCategories": ["sweets", "oils"],
+    "recommendedFoodCategories": ["vegetables", "pulses"],
+    "dietaryGuidelines": [
+      "Favor light, dry, warm foods",
+      "Include pungent, bitter, astringent tastes",
+      "Avoid sweet, sour, salty tastes",
+      "Include honey (not heated) as sweetener",
+      "Use barley, millets, moong dal",
+      "Avoid dairy products except buttermilk",
+      "Practice intermittent fasting"
+    ]
+  },
+  {
+    "id": "gastritis",
+    "name": "Gastritis / Acidity",
+    "nameAyurvedic": "Amlapitta",
+    "description": "Inflammation of the stomach lining with excess acid production.",
+    "affectedDoshas": ["pitta"],
+    "recommendedNutrients": [
+      { "nutrient": "fiber", "direction": "increase", "unit": "g" }
+    ],
+    "avoidFoodCategories": ["spices"],
+    "recommendedFoodCategories": ["vegetables", "dairy"],
+    "dietaryGuidelines": [
+      "Avoid spicy, sour, salty foods",
+      "Include cooling foods like cucumber, coconut, coriander",
+      "Drink cold milk or coconut water",
+      "Avoid citrus fruits and tomatoes",
+      "Favor rice over wheat",
+      "Include ghee in moderation",
+      "Avoid fermented foods"
+    ]
+  },
+  {
+    "id": "constipation",
+    "name": "Constipation",
+    "nameAyurvedic": "Vibandha / Malabaddhata",
+    "description": "Difficulty in bowel movements with hard, dry stools.",
+    "affectedDoshas": ["vata"],
+    "recommendedNutrients": [
+      { "nutrient": "fiber", "direction": "increase", "targetRange": { "min": 30, "max": 40 }, "unit": "g/day" },
+      { "nutrient": "water", "direction": "increase", "targetRange": { "min": 2, "max": 3 }, "unit": "L/day" }
+    ],
+    "avoidFoodCategories": [],
+    "recommendedFoodCategories": ["fruits", "vegetables"],
+    "dietaryGuidelines": [
+      "Include oily, warm, moist foods",
+      "Drink warm water throughout the day",
+      "Include ghee with meals",
+      "Eat soaked dry fruits especially figs and raisins",
+      "Include papaya and banana",
+      "Use triphala before bed",
+      "Avoid dry, cold, and raw foods"
+    ]
+  },
+  {
+    "id": "arthritis",
+    "name": "Arthritis / Joint Pain",
+    "nameAyurvedic": "Sandhivata / Amavata",
+    "description": "Inflammation and pain in the joints.",
+    "affectedDoshas": ["vata"],
+    "recommendedNutrients": [
+      { "nutrient": "omega3", "direction": "increase", "unit": "g" },
+      { "nutrient": "calcium", "direction": "increase", "targetRange": { "min": 1000, "max": 1200 }, "unit": "mg/day" },
+      { "nutrient": "vitaminD", "direction": "increase", "unit": "IU" }
+    ],
+    "avoidFoodCategories": [],
+    "recommendedFoodCategories": ["oils", "spices"],
+    "dietaryGuidelines": [
+      "Include anti-inflammatory spices: turmeric, ginger",
+      "Use sesame oil and ghee",
+      "Favor warm, cooked, easily digestible foods",
+      "Avoid cold, dry, and raw foods",
+      "Include omega-3 rich foods",
+      "Avoid nightshades (tomato, potato, eggplant)",
+      "Include garlic and castor oil"
+    ]
+  },
+  {
+    "id": "anemia",
+    "name": "Anemia / Iron Deficiency",
+    "nameAyurvedic": "Pandu Roga",
+    "description": "Deficiency of red blood cells or hemoglobin in the blood.",
+    "affectedDoshas": ["pitta"],
+    "recommendedNutrients": [
+      { "nutrient": "iron", "direction": "increase", "targetRange": { "min": 15, "max": 30 }, "unit": "mg/day" },
+      { "nutrient": "vitaminC", "direction": "increase", "unit": "mg" },
+      { "nutrient": "vitaminB12", "direction": "increase", "unit": "mcg" },
+      { "nutrient": "folicAcid", "direction": "increase", "unit": "mcg" }
+    ],
+    "avoidFoodCategories": [],
+    "recommendedFoodCategories": ["vegetables", "pulses", "fruits"],
+    "dietaryGuidelines": [
+      "Include iron-rich foods: spinach, pomegranate, dates",
+      "Combine iron foods with vitamin C sources",
+      "Include beetroot and carrot juice",
+      "Use iron cookware",
+      "Include jaggery instead of sugar",
+      "Include black sesame seeds",
+      "Avoid tea/coffee with meals"
+    ]
+  },
+  {
+    "id": "pcod",
+    "name": "PCOD/PCOS",
+    "nameAyurvedic": "Aartava Kshaya",
+    "description": "Hormonal disorder affecting ovaries with symptoms like irregular periods, weight gain, and acne.",
+    "affectedDoshas": ["kapha", "vata"],
+    "recommendedNutrients": [
+      { "nutrient": "fiber", "direction": "increase", "unit": "g" },
+      { "nutrient": "sugar", "direction": "decrease", "unit": "g" },
+      { "nutrient": "omega3", "direction": "increase", "unit": "g" }
+    ],
+    "avoidFoodCategories": ["sweets", "dairy"],
+    "recommendedFoodCategories": ["vegetables", "pulses", "spices"],
+    "dietaryGuidelines": [
+      "Avoid dairy products except buttermilk",
+      "Reduce sugar and refined carbs",
+      "Include cinnamon and fenugreek seeds",
+      "Favor bitter and astringent foods",
+      "Include flaxseeds for omega-3",
+      "Practice intermittent fasting",
+      "Include shatavari and ashwagandha herbs"
+    ]
+  },
+  {
+    "id": "hypothyroid",
+    "name": "Hypothyroidism",
+    "nameAyurvedic": "Galaganda",
+    "description": "Underactive thyroid gland resulting in reduced metabolism.",
+    "affectedDoshas": ["kapha", "vata"],
+    "recommendedNutrients": [
+      { "nutrient": "iodine", "direction": "increase", "unit": "mcg" },
+      { "nutrient": "selenium", "direction": "increase", "unit": "mcg" },
+      { "nutrient": "zinc", "direction": "increase", "unit": "mg" }
+    ],
+    "avoidFoodCategories": [],
+    "recommendedFoodCategories": ["seafood", "vegetables"],
+    "dietaryGuidelines": [
+      "Include iodine-rich foods (iodized salt, seafood)",
+      "Avoid raw cruciferous vegetables (cook them instead)",
+      "Include selenium-rich foods like Brazil nuts",
+      "Favor warm, light, easily digestible foods",
+      "Avoid soy products",
+      "Include coconut oil",
+      "Reduce gluten intake"
+    ]
+  },
+  {
+    "id": "insomnia",
+    "name": "Insomnia / Sleep Disorders",
+    "nameAyurvedic": "Anidra / Nidranasha",
+    "description": "Difficulty falling or staying asleep.",
+    "affectedDoshas": ["vata", "pitta"],
+    "recommendedNutrients": [
+      { "nutrient": "magnesium", "direction": "increase", "unit": "mg" },
+      { "nutrient": "tryptophan", "direction": "increase", "unit": "mg" }
+    ],
+    "avoidFoodCategories": ["beverages"],
+    "recommendedFoodCategories": ["dairy", "nuts_seeds"],
+    "dietaryGuidelines": [
+      "Drink warm milk with nutmeg before bed",
+      "Avoid caffeine after 2 PM",
+      "Include calming foods: cherries, banana, almonds",
+      "Eat dinner at least 2-3 hours before bed",
+      "Include ashwagandha and brahmi herbs",
+      "Avoid heavy, spicy foods at night",
+      "Include ghee in evening meal"
+    ]
+  }
+]
+

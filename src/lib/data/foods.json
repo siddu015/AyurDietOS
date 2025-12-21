@@ -1,0 +1,681 @@
+[
+  {
+    "id": "rice_white",
+    "name": "White Rice",
+    "nameHindi": "Chawal",
+    "category": "grains",
+    "ayurvedic": {
+      "rasa": ["madhura"],
+      "virya": "sheeta",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": -1, "pitta": -1, "kapha": 1 },
+      "guna": ["laghu", "snigdha"]
+    },
+    "nutrition": {
+      "calories": 130,
+      "protein": 2.7,
+      "carbs": 28,
+      "fat": 0.3,
+      "fiber": 0.4
+    },
+    "servingSize": "1 cup cooked",
+    "servingGrams": 158,
+    "season": ["varsha", "sharad"]
+  },
+  {
+    "id": "rice_brown",
+    "name": "Brown Rice",
+    "nameHindi": "Bhura Chawal",
+    "category": "grains",
+    "ayurvedic": {
+      "rasa": ["madhura"],
+      "virya": "sheeta",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": 0, "pitta": -1, "kapha": 0 },
+      "guna": ["guru", "ruksha"]
+    },
+    "nutrition": {
+      "calories": 216,
+      "protein": 5,
+      "carbs": 45,
+      "fat": 1.8,
+      "fiber": 3.5
+    },
+    "servingSize": "1 cup cooked",
+    "servingGrams": 195,
+    "season": ["hemanta", "shishira"]
+  },
+  {
+    "id": "wheat_roti",
+    "name": "Whole Wheat Roti",
+    "nameHindi": "Roti",
+    "category": "grains",
+    "ayurvedic": {
+      "rasa": ["madhura"],
+      "virya": "sheeta",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": -1, "pitta": -1, "kapha": 1 },
+      "guna": ["guru", "snigdha"]
+    },
+    "nutrition": {
+      "calories": 71,
+      "protein": 2.7,
+      "carbs": 15,
+      "fat": 0.4,
+      "fiber": 1.9
+    },
+    "servingSize": "1 roti",
+    "servingGrams": 30,
+    "season": ["hemanta", "shishira"]
+  },
+  {
+    "id": "moong_dal",
+    "name": "Moong Dal",
+    "nameHindi": "Moong Dal",
+    "category": "pulses",
+    "ayurvedic": {
+      "rasa": ["madhura", "kashaya"],
+      "virya": "sheeta",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": 0, "pitta": -1, "kapha": -1 },
+      "guna": ["laghu", "ruksha"]
+    },
+    "nutrition": {
+      "calories": 212,
+      "protein": 14,
+      "carbs": 38,
+      "fat": 0.8,
+      "fiber": 15
+    },
+    "servingSize": "1 cup cooked",
+    "servingGrams": 202,
+    "season": ["grishma", "varsha"]
+  },
+  {
+    "id": "toor_dal",
+    "name": "Toor Dal (Arhar)",
+    "nameHindi": "Arhar Dal",
+    "category": "pulses",
+    "ayurvedic": {
+      "rasa": ["madhura", "kashaya"],
+      "virya": "ushna",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": -1, "pitta": 0, "kapha": 0 },
+      "guna": ["laghu", "ruksha"]
+    },
+    "nutrition": {
+      "calories": 198,
+      "protein": 11,
+      "carbs": 36,
+      "fat": 1.2,
+      "fiber": 8
+    },
+    "servingSize": "1 cup cooked",
+    "servingGrams": 168,
+    "season": ["hemanta", "shishira"]
+  },
+  {
+    "id": "chana_dal",
+    "name": "Chana Dal",
+    "nameHindi": "Chana Dal",
+    "category": "pulses",
+    "ayurvedic": {
+      "rasa": ["madhura", "kashaya"],
+      "virya": "sheeta",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": 1, "pitta": -1, "kapha": -1 },
+      "guna": ["ruksha", "laghu"]
+    },
+    "nutrition": {
+      "calories": 269,
+      "protein": 15,
+      "carbs": 45,
+      "fat": 4.3,
+      "fiber": 12
+    },
+    "servingSize": "1 cup cooked",
+    "servingGrams": 200,
+    "season": ["hemanta", "shishira"]
+  },
+  {
+    "id": "palak",
+    "name": "Spinach",
+    "nameHindi": "Palak",
+    "category": "vegetables",
+    "ayurvedic": {
+      "rasa": ["tikta", "kashaya"],
+      "virya": "sheeta",
+      "vipaka": "katu",
+      "doshaEffect": { "vata": 1, "pitta": -1, "kapha": -1 },
+      "guna": ["laghu", "ruksha"]
+    },
+    "nutrition": {
+      "calories": 23,
+      "protein": 2.9,
+      "carbs": 3.6,
+      "fat": 0.4,
+      "fiber": 2.2,
+      "vitamins": { "A": 469, "C": 28, "K": 483 },
+      "minerals": { "iron": 2.7, "calcium": 99 }
+    },
+    "servingSize": "1 cup raw",
+    "servingGrams": 30,
+    "season": ["hemanta", "shishira"]
+  },
+  {
+    "id": "lauki",
+    "name": "Bottle Gourd",
+    "nameHindi": "Lauki/Ghiya",
+    "category": "vegetables",
+    "ayurvedic": {
+      "rasa": ["madhura"],
+      "virya": "sheeta",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": -1, "pitta": -2, "kapha": 0 },
+      "guna": ["laghu", "snigdha"]
+    },
+    "nutrition": {
+      "calories": 14,
+      "protein": 0.6,
+      "carbs": 3.4,
+      "fat": 0.02,
+      "fiber": 0.5
+    },
+    "servingSize": "1 cup cooked",
+    "servingGrams": 116,
+    "season": ["grishma", "varsha"]
+  },
+  {
+    "id": "karela",
+    "name": "Bitter Gourd",
+    "nameHindi": "Karela",
+    "category": "vegetables",
+    "ayurvedic": {
+      "rasa": ["tikta"],
+      "virya": "sheeta",
+      "vipaka": "katu",
+      "doshaEffect": { "vata": 1, "pitta": -2, "kapha": -2 },
+      "guna": ["laghu", "ruksha"]
+    },
+    "nutrition": {
+      "calories": 17,
+      "protein": 1,
+      "carbs": 3.7,
+      "fat": 0.2,
+      "fiber": 2.8
+    },
+    "servingSize": "1 cup",
+    "servingGrams": 94,
+    "season": ["grishma", "varsha"],
+    "contraindications": ["pregnancy", "hypoglycemia"]
+  },
+  {
+    "id": "cucumber",
+    "name": "Cucumber",
+    "nameHindi": "Kheera",
+    "category": "vegetables",
+    "ayurvedic": {
+      "rasa": ["madhura"],
+      "virya": "sheeta",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": 0, "pitta": -2, "kapha": 1 },
+      "guna": ["guru", "snigdha"]
+    },
+    "nutrition": {
+      "calories": 16,
+      "protein": 0.7,
+      "carbs": 3.6,
+      "fat": 0.1,
+      "fiber": 0.5
+    },
+    "servingSize": "1 cup sliced",
+    "servingGrams": 104,
+    "season": ["grishma"]
+  },
+  {
+    "id": "tomato",
+    "name": "Tomato",
+    "nameHindi": "Tamatar",
+    "category": "vegetables",
+    "ayurvedic": {
+      "rasa": ["amla", "madhura"],
+      "virya": "ushna",
+      "vipaka": "amla",
+      "doshaEffect": { "vata": -1, "pitta": 1, "kapha": -1 },
+      "guna": ["laghu", "snigdha"]
+    },
+    "nutrition": {
+      "calories": 18,
+      "protein": 0.9,
+      "carbs": 3.9,
+      "fat": 0.2,
+      "fiber": 1.2,
+      "vitamins": { "C": 14, "A": 42 }
+    },
+    "servingSize": "1 medium",
+    "servingGrams": 123,
+    "season": ["sharad", "hemanta"]
+  },
+  {
+    "id": "banana",
+    "name": "Banana",
+    "nameHindi": "Kela",
+    "category": "fruits",
+    "ayurvedic": {
+      "rasa": ["madhura"],
+      "virya": "sheeta",
+      "vipaka": "amla",
+      "doshaEffect": { "vata": -2, "pitta": -1, "kapha": 2 },
+      "guna": ["guru", "snigdha"]
+    },
+    "nutrition": {
+      "calories": 105,
+      "protein": 1.3,
+      "carbs": 27,
+      "fat": 0.4,
+      "fiber": 3.1,
+      "minerals": { "potassium": 422 }
+    },
+    "servingSize": "1 medium",
+    "servingGrams": 118,
+    "season": ["varsha", "sharad"]
+  },
+  {
+    "id": "apple",
+    "name": "Apple",
+    "nameHindi": "Seb",
+    "category": "fruits",
+    "ayurvedic": {
+      "rasa": ["madhura", "kashaya"],
+      "virya": "sheeta",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": 0, "pitta": -1, "kapha": 0 },
+      "guna": ["laghu", "ruksha"]
+    },
+    "nutrition": {
+      "calories": 95,
+      "protein": 0.5,
+      "carbs": 25,
+      "fat": 0.3,
+      "fiber": 4.4
+    },
+    "servingSize": "1 medium",
+    "servingGrams": 182,
+    "season": ["sharad", "hemanta"]
+  },
+  {
+    "id": "mango",
+    "name": "Mango (Ripe)",
+    "nameHindi": "Aam",
+    "category": "fruits",
+    "ayurvedic": {
+      "rasa": ["madhura", "amla"],
+      "virya": "ushna",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": -2, "pitta": 1, "kapha": 1 },
+      "guna": ["guru", "snigdha"]
+    },
+    "nutrition": {
+      "calories": 99,
+      "protein": 1.4,
+      "carbs": 25,
+      "fat": 0.6,
+      "fiber": 2.6,
+      "vitamins": { "C": 60, "A": 54 }
+    },
+    "servingSize": "1 cup",
+    "servingGrams": 165,
+    "season": ["grishma"]
+  },
+  {
+    "id": "pomegranate",
+    "name": "Pomegranate",
+    "nameHindi": "Anar",
+    "category": "fruits",
+    "ayurvedic": {
+      "rasa": ["madhura", "amla", "kashaya"],
+      "virya": "sheeta",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": -1, "pitta": -1, "kapha": 0 },
+      "guna": ["laghu", "snigdha"]
+    },
+    "nutrition": {
+      "calories": 144,
+      "protein": 2.9,
+      "carbs": 33,
+      "fat": 2,
+      "fiber": 7
+    },
+    "servingSize": "1 cup arils",
+    "servingGrams": 174,
+    "season": ["sharad", "hemanta"]
+  },
+  {
+    "id": "milk_cow",
+    "name": "Cow's Milk",
+    "nameHindi": "Gai ka Doodh",
+    "category": "dairy",
+    "ayurvedic": {
+      "rasa": ["madhura"],
+      "virya": "sheeta",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": -2, "pitta": -1, "kapha": 1 },
+      "guna": ["guru", "snigdha"]
+    },
+    "nutrition": {
+      "calories": 149,
+      "protein": 8,
+      "carbs": 12,
+      "fat": 8,
+      "fiber": 0,
+      "minerals": { "calcium": 276 }
+    },
+    "servingSize": "1 cup",
+    "servingGrams": 244,
+    "season": ["hemanta", "shishira"]
+  },
+  {
+    "id": "yogurt",
+    "name": "Yogurt (Curd)",
+    "nameHindi": "Dahi",
+    "category": "dairy",
+    "ayurvedic": {
+      "rasa": ["amla", "madhura"],
+      "virya": "ushna",
+      "vipaka": "amla",
+      "doshaEffect": { "vata": -1, "pitta": 1, "kapha": 1 },
+      "guna": ["guru", "snigdha"]
+    },
+    "nutrition": {
+      "calories": 149,
+      "protein": 8.5,
+      "carbs": 11.4,
+      "fat": 8,
+      "fiber": 0,
+      "minerals": { "calcium": 296 }
+    },
+    "servingSize": "1 cup",
+    "servingGrams": 245,
+    "season": ["grishma"],
+    "contraindications": ["night_consumption", "fever"]
+  },
+  {
+    "id": "ghee",
+    "name": "Ghee (Clarified Butter)",
+    "nameHindi": "Ghee",
+    "category": "oils",
+    "ayurvedic": {
+      "rasa": ["madhura"],
+      "virya": "sheeta",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": -2, "pitta": -1, "kapha": 1 },
+      "guna": ["snigdha", "mridu"]
+    },
+    "nutrition": {
+      "calories": 112,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 12.7,
+      "fiber": 0
+    },
+    "servingSize": "1 tbsp",
+    "servingGrams": 14,
+    "season": ["hemanta", "shishira", "vasanta"]
+  },
+  {
+    "id": "mustard_oil",
+    "name": "Mustard Oil",
+    "nameHindi": "Sarson ka Tel",
+    "category": "oils",
+    "ayurvedic": {
+      "rasa": ["katu", "tikta"],
+      "virya": "ushna",
+      "vipaka": "katu",
+      "doshaEffect": { "vata": -1, "pitta": 1, "kapha": -2 },
+      "guna": ["tikshna", "laghu"]
+    },
+    "nutrition": {
+      "calories": 124,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 14,
+      "fiber": 0
+    },
+    "servingSize": "1 tbsp",
+    "servingGrams": 14,
+    "season": ["hemanta", "shishira"]
+  },
+  {
+    "id": "turmeric",
+    "name": "Turmeric",
+    "nameHindi": "Haldi",
+    "category": "spices",
+    "ayurvedic": {
+      "rasa": ["tikta", "katu"],
+      "virya": "ushna",
+      "vipaka": "katu",
+      "doshaEffect": { "vata": -1, "pitta": 0, "kapha": -2 },
+      "guna": ["laghu", "ruksha"]
+    },
+    "nutrition": {
+      "calories": 9,
+      "protein": 0.3,
+      "carbs": 2,
+      "fat": 0.1,
+      "fiber": 0.5
+    },
+    "servingSize": "1 tsp",
+    "servingGrams": 3,
+    "season": ["varsha", "sharad"]
+  },
+  {
+    "id": "ginger",
+    "name": "Ginger",
+    "nameHindi": "Adrak",
+    "category": "spices",
+    "ayurvedic": {
+      "rasa": ["katu"],
+      "virya": "ushna",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": -1, "pitta": 1, "kapha": -2 },
+      "guna": ["laghu", "snigdha"]
+    },
+    "nutrition": {
+      "calories": 5,
+      "protein": 0.1,
+      "carbs": 1,
+      "fat": 0,
+      "fiber": 0.1
+    },
+    "servingSize": "1 tsp grated",
+    "servingGrams": 6,
+    "season": ["hemanta", "shishira", "varsha"]
+  },
+  {
+    "id": "cumin",
+    "name": "Cumin Seeds",
+    "nameHindi": "Jeera",
+    "category": "spices",
+    "ayurvedic": {
+      "rasa": ["katu"],
+      "virya": "ushna",
+      "vipaka": "katu",
+      "doshaEffect": { "vata": -1, "pitta": 0, "kapha": -1 },
+      "guna": ["laghu", "ruksha"]
+    },
+    "nutrition": {
+      "calories": 8,
+      "protein": 0.4,
+      "carbs": 0.9,
+      "fat": 0.5,
+      "fiber": 0.2
+    },
+    "servingSize": "1 tsp",
+    "servingGrams": 2,
+    "season": ["varsha", "sharad"]
+  },
+  {
+    "id": "coriander",
+    "name": "Coriander Seeds",
+    "nameHindi": "Dhania",
+    "category": "spices",
+    "ayurvedic": {
+      "rasa": ["katu", "tikta", "madhura"],
+      "virya": "sheeta",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": -1, "pitta": -1, "kapha": -1 },
+      "guna": ["laghu", "snigdha"]
+    },
+    "nutrition": {
+      "calories": 5,
+      "protein": 0.2,
+      "carbs": 0.9,
+      "fat": 0.3,
+      "fiber": 0.7
+    },
+    "servingSize": "1 tsp",
+    "servingGrams": 2,
+    "season": ["grishma", "sharad"]
+  },
+  {
+    "id": "black_pepper",
+    "name": "Black Pepper",
+    "nameHindi": "Kali Mirch",
+    "category": "spices",
+    "ayurvedic": {
+      "rasa": ["katu"],
+      "virya": "ushna",
+      "vipaka": "katu",
+      "doshaEffect": { "vata": -1, "pitta": 1, "kapha": -2 },
+      "guna": ["laghu", "tikshna"]
+    },
+    "nutrition": {
+      "calories": 6,
+      "protein": 0.2,
+      "carbs": 1.5,
+      "fat": 0.1,
+      "fiber": 0.6
+    },
+    "servingSize": "1 tsp",
+    "servingGrams": 2.3,
+    "season": ["hemanta", "shishira"]
+  },
+  {
+    "id": "almonds",
+    "name": "Almonds",
+    "nameHindi": "Badam",
+    "category": "nuts_seeds",
+    "ayurvedic": {
+      "rasa": ["madhura"],
+      "virya": "ushna",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": -2, "pitta": 1, "kapha": 1 },
+      "guna": ["guru", "snigdha"]
+    },
+    "nutrition": {
+      "calories": 164,
+      "protein": 6,
+      "carbs": 6,
+      "fat": 14,
+      "fiber": 3.5
+    },
+    "servingSize": "1 oz (23 almonds)",
+    "servingGrams": 28,
+    "season": ["hemanta", "shishira"]
+  },
+  {
+    "id": "honey",
+    "name": "Honey",
+    "nameHindi": "Shahad",
+    "category": "sweets",
+    "ayurvedic": {
+      "rasa": ["madhura", "kashaya"],
+      "virya": "sheeta",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": 0, "pitta": 0, "kapha": -2 },
+      "guna": ["laghu", "ruksha"]
+    },
+    "nutrition": {
+      "calories": 64,
+      "protein": 0.1,
+      "carbs": 17,
+      "fat": 0,
+      "fiber": 0
+    },
+    "servingSize": "1 tbsp",
+    "servingGrams": 21,
+    "season": ["vasanta", "hemanta"],
+    "contraindications": ["heated_honey", "ghee_equal_quantity"]
+  },
+  {
+    "id": "chicken",
+    "name": "Chicken Breast",
+    "nameHindi": "Murgh",
+    "category": "meat",
+    "ayurvedic": {
+      "rasa": ["madhura"],
+      "virya": "ushna",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": -1, "pitta": 1, "kapha": 1 },
+      "guna": ["guru", "snigdha"]
+    },
+    "nutrition": {
+      "calories": 165,
+      "protein": 31,
+      "carbs": 0,
+      "fat": 3.6,
+      "fiber": 0
+    },
+    "servingSize": "100g cooked",
+    "servingGrams": 100,
+    "season": ["hemanta", "shishira"]
+  },
+  {
+    "id": "fish_rohu",
+    "name": "Rohu Fish",
+    "nameHindi": "Rohu Machli",
+    "category": "seafood",
+    "ayurvedic": {
+      "rasa": ["madhura"],
+      "virya": "ushna",
+      "vipaka": "madhura",
+      "doshaEffect": { "vata": -1, "pitta": 1, "kapha": 1 },
+      "guna": ["guru", "snigdha"]
+    },
+    "nutrition": {
+      "calories": 97,
+      "protein": 17,
+      "carbs": 0,
+      "fat": 2.8,
+      "fiber": 0
+    },
+    "servingSize": "100g cooked",
+    "servingGrams": 100,
+    "season": ["hemanta", "shishira"],
+    "contraindications": ["milk_combination"]
+  },
+  {
+    "id": "green_tea",
+    "name": "Green Tea",
+    "nameHindi": "Green Chai",
+    "category": "beverages",
+    "ayurvedic": {
+      "rasa": ["tikta", "kashaya"],
+      "virya": "sheeta",
+      "vipaka": "katu",
+      "doshaEffect": { "vata": 1, "pitta": -1, "kapha": -1 },
+      "guna": ["laghu", "ruksha"]
+    },
+    "nutrition": {
+      "calories": 2,
+      "protein": 0,
+      "carbs": 0,
+      "fat": 0,
+      "fiber": 0
+    },
+    "servingSize": "1 cup",
+    "servingGrams": 245,
+    "season": ["grishma", "sharad"]
+  }
+]
+

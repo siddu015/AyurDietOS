@@ -1,0 +1,230 @@
+{
+  "questions": [
+    {
+      "id": "body_frame",
+      "question": "What best describes your body frame?",
+      "category": "physical",
+      "options": [
+        { "text": "Thin, light, tall or short, difficulty gaining weight", "vataScore": 3, "pittaScore": 0, "kaphaScore": 0 },
+        { "text": "Medium build, well-proportioned, athletic", "vataScore": 0, "pittaScore": 3, "kaphaScore": 0 },
+        { "text": "Large, solid frame, gains weight easily, strong", "vataScore": 0, "pittaScore": 0, "kaphaScore": 3 }
+      ]
+    },
+    {
+      "id": "skin_type",
+      "question": "How would you describe your skin?",
+      "category": "physical",
+      "options": [
+        { "text": "Dry, rough, thin, cool to touch, prone to cracking", "vataScore": 3, "pittaScore": 0, "kaphaScore": 0 },
+        { "text": "Warm, slightly oily, sensitive, prone to rashes/acne", "vataScore": 0, "pittaScore": 3, "kaphaScore": 0 },
+        { "text": "Thick, smooth, oily, cool, soft", "vataScore": 0, "pittaScore": 0, "kaphaScore": 3 }
+      ]
+    },
+    {
+      "id": "hair_type",
+      "question": "What is your hair like?",
+      "category": "physical",
+      "options": [
+        { "text": "Dry, thin, frizzy, prone to breakage and split ends", "vataScore": 3, "pittaScore": 0, "kaphaScore": 0 },
+        { "text": "Fine, straight, oily, prone to early graying or hair loss", "vataScore": 0, "pittaScore": 3, "kaphaScore": 0 },
+        { "text": "Thick, wavy, lustrous, strong", "vataScore": 0, "pittaScore": 0, "kaphaScore": 3 }
+      ]
+    },
+    {
+      "id": "appetite",
+      "question": "How would you describe your appetite?",
+      "category": "digestive",
+      "options": [
+        { "text": "Variable, sometimes strong, sometimes weak, forget to eat", "vataScore": 3, "pittaScore": 0, "kaphaScore": 0 },
+        { "text": "Strong, cannot skip meals, get irritable when hungry", "vataScore": 0, "pittaScore": 3, "kaphaScore": 0 },
+        { "text": "Steady but slow, can easily skip meals without discomfort", "vataScore": 0, "pittaScore": 0, "kaphaScore": 3 }
+      ]
+    },
+    {
+      "id": "digestion",
+      "question": "How is your digestion typically?",
+      "category": "digestive",
+      "options": [
+        { "text": "Irregular, bloating, gas, constipation common", "vataScore": 3, "pittaScore": 0, "kaphaScore": 0 },
+        { "text": "Strong, quick digestion, occasional acidity or loose stools", "vataScore": 0, "pittaScore": 3, "kaphaScore": 0 },
+        { "text": "Slow but steady, heavy feeling after meals, mucus in stool", "vataScore": 0, "pittaScore": 0, "kaphaScore": 3 }
+      ]
+    },
+    {
+      "id": "sleep_pattern",
+      "question": "How do you typically sleep?",
+      "category": "behavioral",
+      "options": [
+        { "text": "Light, interrupted, difficulty falling asleep, wake up easily", "vataScore": 3, "pittaScore": 0, "kaphaScore": 0 },
+        { "text": "Moderate, sound sleep but not too long, wake up alert", "vataScore": 0, "pittaScore": 3, "kaphaScore": 0 },
+        { "text": "Deep, heavy, prolonged, difficulty waking up", "vataScore": 0, "pittaScore": 0, "kaphaScore": 3 }
+      ]
+    },
+    {
+      "id": "body_temperature",
+      "question": "How do you respond to temperature?",
+      "category": "physical",
+      "options": [
+        { "text": "Often feel cold, prefer warm climates, cold hands and feet", "vataScore": 3, "pittaScore": 0, "kaphaScore": 0 },
+        { "text": "Often feel warm, dislike heat, sweat easily", "vataScore": 0, "pittaScore": 3, "kaphaScore": 0 },
+        { "text": "Adaptable to temperature, tolerate extremes well", "vataScore": 0, "pittaScore": 0, "kaphaScore": 3 }
+      ]
+    },
+    {
+      "id": "mental_activity",
+      "question": "How would you describe your mental activity?",
+      "category": "mental",
+      "options": [
+        { "text": "Quick, restless mind, creative but scattered, many ideas", "vataScore": 3, "pittaScore": 0, "kaphaScore": 0 },
+        { "text": "Sharp, focused, analytical, goal-oriented", "vataScore": 0, "pittaScore": 3, "kaphaScore": 0 },
+        { "text": "Calm, steady, methodical, good long-term memory", "vataScore": 0, "pittaScore": 0, "kaphaScore": 3 }
+      ]
+    },
+    {
+      "id": "stress_response",
+      "question": "How do you typically respond to stress?",
+      "category": "mental",
+      "options": [
+        { "text": "Become anxious, worried, fearful, overthinking", "vataScore": 3, "pittaScore": 0, "kaphaScore": 0 },
+        { "text": "Become irritable, angry, critical, impatient", "vataScore": 0, "pittaScore": 3, "kaphaScore": 0 },
+        { "text": "Become withdrawn, stubborn, resistant to change", "vataScore": 0, "pittaScore": 0, "kaphaScore": 3 }
+      ]
+    },
+    {
+      "id": "speech_pattern",
+      "question": "How would you describe your speech?",
+      "category": "behavioral",
+      "options": [
+        { "text": "Fast, talkative, may jump between topics", "vataScore": 3, "pittaScore": 0, "kaphaScore": 0 },
+        { "text": "Clear, precise, argumentative, convincing", "vataScore": 0, "pittaScore": 3, "kaphaScore": 0 },
+        { "text": "Slow, deliberate, melodious, thoughtful", "vataScore": 0, "pittaScore": 0, "kaphaScore": 3 }
+      ]
+    },
+    {
+      "id": "learning_style",
+      "question": "How do you learn best?",
+      "category": "mental",
+      "options": [
+        { "text": "Learn quickly but forget quickly, need to repeat", "vataScore": 3, "pittaScore": 0, "kaphaScore": 0 },
+        { "text": "Moderate pace, good focus, remember well", "vataScore": 0, "pittaScore": 3, "kaphaScore": 0 },
+        { "text": "Slow to learn but excellent retention, never forget", "vataScore": 0, "pittaScore": 0, "kaphaScore": 3 }
+      ]
+    },
+    {
+      "id": "physical_activity",
+      "question": "What is your approach to physical activity?",
+      "category": "behavioral",
+      "options": [
+        { "text": "Active but tire quickly, prefer low-impact activities", "vataScore": 3, "pittaScore": 0, "kaphaScore": 0 },
+        { "text": "Competitive, enjoy challenging sports, moderate endurance", "vataScore": 0, "pittaScore": 3, "kaphaScore": 0 },
+        { "text": "Prefer slow, steady activities, excellent stamina once started", "vataScore": 0, "pittaScore": 0, "kaphaScore": 3 }
+      ]
+    },
+    {
+      "id": "spending_habits",
+      "question": "How do you handle money?",
+      "category": "behavioral",
+      "options": [
+        { "text": "Spend impulsively, difficulty saving, money comes and goes", "vataScore": 3, "pittaScore": 0, "kaphaScore": 0 },
+        { "text": "Spend on quality items, organized finances, calculated purchases", "vataScore": 0, "pittaScore": 3, "kaphaScore": 0 },
+        { "text": "Save money, accumulate wealth, reluctant to spend", "vataScore": 0, "pittaScore": 0, "kaphaScore": 3 }
+      ]
+    },
+    {
+      "id": "bowel_movements",
+      "question": "How are your bowel movements?",
+      "category": "digestive",
+      "options": [
+        { "text": "Irregular, dry, hard stools, tendency to constipation", "vataScore": 3, "pittaScore": 0, "kaphaScore": 0 },
+        { "text": "Regular, 2-3 times daily, loose or burning sensation", "vataScore": 0, "pittaScore": 3, "kaphaScore": 0 },
+        { "text": "Regular, once daily, heavy, may have mucus", "vataScore": 0, "pittaScore": 0, "kaphaScore": 3 }
+      ]
+    },
+    {
+      "id": "sweat_pattern",
+      "question": "How do you sweat?",
+      "category": "physical",
+      "options": [
+        { "text": "Minimal sweating, dry skin even in heat", "vataScore": 3, "pittaScore": 0, "kaphaScore": 0 },
+        { "text": "Profuse sweating, strong body odor", "vataScore": 0, "pittaScore": 3, "kaphaScore": 0 },
+        { "text": "Moderate sweating, pleasant or no body odor", "vataScore": 0, "pittaScore": 0, "kaphaScore": 3 }
+      ]
+    }
+  ],
+  "interpretations": {
+    "vata_dominant": {
+      "description": "You have a Vata-dominant constitution. Vata governs movement and is composed of air and ether elements. You are creative, quick-thinking, and enthusiastic but may experience anxiety, dryness, and irregular habits when imbalanced.",
+      "recommendations": [
+        "Follow a regular daily routine for meals and sleep",
+        "Favor warm, cooked, oily foods",
+        "Include sweet, sour, and salty tastes",
+        "Stay warm and avoid cold, dry environments",
+        "Practice calming activities like yoga and meditation",
+        "Use sesame oil for self-massage (Abhyanga)"
+      ]
+    },
+    "pitta_dominant": {
+      "description": "You have a Pitta-dominant constitution. Pitta governs transformation and is composed of fire and water elements. You are sharp, focused, and natural leaders but may experience anger, inflammation, and acidity when imbalanced.",
+      "recommendations": [
+        "Avoid excessive heat and direct sun exposure",
+        "Favor cool, refreshing foods",
+        "Include sweet, bitter, and astringent tastes",
+        "Avoid spicy, sour, and salty foods",
+        "Practice moderation in work and exercise",
+        "Engage in cooling activities like swimming"
+      ]
+    },
+    "kapha_dominant": {
+      "description": "You have a Kapha-dominant constitution. Kapha governs structure and is composed of earth and water elements. You are calm, loving, and strong but may experience weight gain, lethargy, and attachment when imbalanced.",
+      "recommendations": [
+        "Stay physically active with regular exercise",
+        "Favor light, warm, stimulating foods",
+        "Include pungent, bitter, and astringent tastes",
+        "Avoid heavy, oily, and cold foods",
+        "Wake up early and avoid daytime sleeping",
+        "Seek new experiences and challenges"
+      ]
+    },
+    "vata_pitta": {
+      "description": "You have a Vata-Pitta dual constitution. You share qualities of both doshas - creative and sharp-minded, but may experience both anxiety and irritability when imbalanced.",
+      "recommendations": [
+        "Maintain routine while allowing flexibility",
+        "Favor warm but not overly spicy foods",
+        "Include sweet and cooling foods",
+        "Balance activity with adequate rest",
+        "Practice both grounding and cooling practices"
+      ]
+    },
+    "pitta_kapha": {
+      "description": "You have a Pitta-Kapha dual constitution. You combine strength and determination with stability, but may experience both heat-related and congestion issues when imbalanced.",
+      "recommendations": [
+        "Favor light, cooling foods",
+        "Include bitter and astringent tastes",
+        "Maintain regular exercise routine",
+        "Avoid heavy, oily, and very spicy foods",
+        "Balance ambition with contentment"
+      ]
+    },
+    "vata_kapha": {
+      "description": "You have a Vata-Kapha dual constitution. You may alternate between lightness and heaviness, activity and inertia. Both doshas are cold, so staying warm is important.",
+      "recommendations": [
+        "Favor warm, light, stimulating foods",
+        "Include pungent and sour tastes moderately",
+        "Maintain regular routine with variety",
+        "Stay warm and active",
+        "Use warming spices like ginger"
+      ]
+    },
+    "tridosha": {
+      "description": "You have a balanced Tridosha constitution, which is rare. All three doshas are relatively equal. Focus on maintaining this balance through seasonal adjustments.",
+      "recommendations": [
+        "Adjust diet according to seasons",
+        "Maintain moderate lifestyle in all aspects",
+        "Pay attention to early signs of imbalance",
+        "All tastes in moderation",
+        "Flexible approach to diet and lifestyle"
+      ]
+    }
+  }
+}
+

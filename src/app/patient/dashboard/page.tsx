@@ -1,301 +1,301 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { PatientProfile, DoshaPrakriti, PrakritiQuizResult, Food } from '@/lib/types';
-import { foods } from '@/lib/data';
-import { getTopRecommendations, composeMeal, generateDailyPlan } from '@/lib/algorithms';
-import { DoshaBar } from '@/components/ui/DoshaBar';
-import { ScoreCircle } from '@/components/ui/ScoreCircle';
-import { FoodCard } from '@/components/FoodCard';
-import { MealPlate } from '@/components/MealPlate';
+import {
+  Activity,
+  UtensilsCrossed,
+  MessageCircle,
+  Leaf,
+  TrendingUp,
+  Sparkles,
+  CalendarDays,
+  ArrowRight,
+} from 'lucide-react';
+import { getCurrentSeason, getSeasonInfo } from '@/lib/data';
 
-// Default patient profile for demo
-const defaultPrakriti: DoshaPrakriti = {
-  vata: 45,
-  pitta: 35,
-  kapha: 20,
-  dominant: 'vata',
-  secondary: 'pitta',
-};
+interface ProfileData {
+  user: { id: string; name: string; email: string; age: number; gender: string };
+  prakriti: { vata: number; pitta: number; kapha: number; dominant: string; secondary?: string } | null;
+  health: { conditions: string[]; allergies: string[]; dietary_preferences: string[]; weight_goal: string; calorie_target: number; protein_target: number } | null;
+}
 
 export default function PatientDashboardPage() {
-  const [prakriti, setPrakriti] = useState<DoshaPrakriti | null>(null);
-  const [patient, setPatient] = useState<PatientProfile | null>(null);
-  const [activeTab, setActiveTab] = useState<'overview' | 'foods' | 'meals'>('overview');
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Try to load prakriti from localStorage
-    const stored = localStorage.getItem('patientPrakriti');
-    if (stored) {
-      const result: PrakritiQuizResult = JSON.parse(stored);
-      setPrakriti(result.prakriti);
-    } else {
-      // Use default for demo
-      setPrakriti(defaultPrakriti);
-    }
+    const userId = localStorage.getItem('ayurdiet_user_id');
+    if (!userId) return;
+
+    fetch(`/api/users?id=${userId}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setProfile(data);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
-  useEffect(() => {
-    if (prakriti) {
-      setPatient({
-        id: 'demo_patient',
-        name: 'Demo Patient',
-        age: 30,
-        gender: 'male',
-        prakriti,
-        conditions: [],
-        allergies: [],
-        dietaryPreferences: ['vegetarian'],
-        goals: { weightGoal: 'maintain', dailyCalorieTarget: 1800, proteinTarget: 55, dietGoals: ['digestive_health', 'energy_boost'] },
-      });
-    }
-  }, [prakriti]);
-
-  if (!prakriti || !patient) {
+  if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh]">
-        <h2 className="text-xl font-semibold mb-4">Welcome to AyurDiet OS</h2>
-        <p className="text-stone mb-6">Complete the Prakriti assessment to get started</p>
-        <Link href="/patient/onboarding" className="btn btn-primary">
-          Take Prakriti Quiz
-        </Link>
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 rounded-full border-2 border-[#c9a227] border-t-transparent animate-spin" />
       </div>
     );
   }
 
+  if (!profile) return null;
+
+  const currentSeason = getCurrentSeason();
+  const seasonInfo = getSeasonInfo(currentSeason);
+  const greeting = getGreeting();
+
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="flex justify-between items-start">
-        <div>
-          <h1 className="text-3xl font-bold mb-2">Your Dashboard</h1>
-          <p className="text-stone">Personalized diet recommendations based on your Prakriti</p>
-        </div>
-        <Link href="/patient/onboarding" className="btn btn-outline text-sm">
-          Retake Quiz
-        </Link>
-      </div>
-
-      {/* Tabs */}
-      <div className="flex gap-2 border-b border-clay pb-2">
-        {(['overview', 'foods', 'meals'] as const).map(tab => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-t-lg font-medium capitalize transition-colors ${
-              activeTab === tab
-                ? 'bg-primary text-white'
-                : 'text-stone hover:text-foreground hover:bg-sand'
-            }`}
-          >
-            {tab}
-          </button>
-        ))}
-      </div>
-
-      {/* Tab Content */}
-      {activeTab === 'overview' && (
-        <OverviewTab prakriti={prakriti} patient={patient} />
-      )}
-      {activeTab === 'foods' && (
-        <FoodsTab patient={patient} />
-      )}
-      {activeTab === 'meals' && (
-        <MealsTab patient={patient} />
-      )}
-    </div>
-  );
-}
-
-function OverviewTab({ prakriti, patient }: { prakriti: DoshaPrakriti; patient: PatientProfile }) {
-  const topFoods = getTopRecommendations(foods, patient, 5);
-
-  return (
-    <div className="grid md:grid-cols-2 gap-6">
-      {/* Prakriti Card */}
-      <div className="card p-6">
-        <h2 className="text-xl font-semibold mb-4">Your Prakriti</h2>
-        <div className="mb-6">
-          <DoshaBar prakriti={prakriti} size="lg" />
-        </div>
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <span className={`px-3 py-1 rounded-full font-medium ${
-            prakriti.dominant === 'vata' ? 'badge-vata' :
-            prakriti.dominant === 'pitta' ? 'badge-pitta' : 'badge-kapha'
-          }`}>
-            {prakriti.dominant.charAt(0).toUpperCase() + prakriti.dominant.slice(1)}
-          </span>
-          {prakriti.secondary && (
-            <>
-              <span className="text-stone">-</span>
-              <span className={`px-3 py-1 rounded-full font-medium ${
-                prakriti.secondary === 'vata' ? 'badge-vata' :
-                prakriti.secondary === 'pitta' ? 'badge-pitta' : 'badge-kapha'
-              }`}>
-                {prakriti.secondary.charAt(0).toUpperCase() + prakriti.secondary.slice(1)}
-              </span>
-            </>
+      {/* Welcome Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+      >
+        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-1">
+          {greeting}, <span className="text-[#c9a227]">{profile.user.name?.split(' ')[0]}</span>
+        </h1>
+        <p className="text-white/40 text-sm">
+          {profile.prakriti ? (
+            <>Your <span className="text-white/60 capitalize">{profile.prakriti.dominant}</span> constitution guide for today</>
+          ) : (
+            'Your personalized Ayurvedic dashboard'
           )}
-          <span className="text-stone">Constitution</span>
+        </p>
+      </motion.div>
+
+      {/* Top Stats Row */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        className="grid grid-cols-2 lg:grid-cols-4 gap-4"
+      >
+        {/* Dosha Distribution */}
+        {profile.prakriti && (
+          <div className="col-span-2 p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <Activity className="h-4 w-4 text-[#c9a227]" />
+              <span className="text-sm font-medium text-white/70">Your Prakriti</span>
+            </div>
+            <div className="space-y-3">
+              <DoshaBar label="Vata" value={profile.prakriti.vata} color="#7eb8da" />
+              <DoshaBar label="Pitta" value={profile.prakriti.pitta} color="#e74c3c" />
+              <DoshaBar label="Kapha" value={profile.prakriti.kapha} color="#2ecc71" />
+            </div>
+          </div>
+        )}
+
+        {/* Daily Target */}
+        <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="h-4 w-4 text-[#4a7c59]" />
+            <span className="text-xs font-medium text-white/50">Daily Target</span>
+          </div>
+          <p className="text-2xl font-bold text-white">{profile.health?.calorie_target || 2000}</p>
+          <p className="text-xs text-white/40">kcal / day</p>
+          <div className="mt-2 pt-2 border-t border-white/5">
+            <p className="text-sm text-[#4a7c59] font-medium">{profile.health?.protein_target || 60}g protein</p>
+          </div>
         </div>
-        <div className="p-4 bg-sand rounded-lg text-sm">
-          <p className="text-stone">
-            {prakriti.dominant === 'vata' && 
-              'Your Vata-dominant constitution benefits from warm, grounding foods. Avoid cold and dry foods.'
-            }
-            {prakriti.dominant === 'pitta' && 
-              'Your Pitta-dominant constitution benefits from cooling, calming foods. Avoid hot and spicy foods.'
-            }
-            {prakriti.dominant === 'kapha' && 
-              'Your Kapha-dominant constitution benefits from light, stimulating foods. Avoid heavy and oily foods.'
-            }
+
+        {/* Season */}
+        <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+          <div className="flex items-center gap-2 mb-3">
+            <Leaf className="h-4 w-4 text-[#d35400]" />
+            <span className="text-xs font-medium text-white/50">Current Ritu</span>
+          </div>
+          <p className="text-xl font-bold text-white capitalize">{currentSeason}</p>
+          <p className="text-xs text-white/40 mt-1">
+            {seasonInfo ? `${seasonInfo.dietaryGuidelines?.[0] || 'Seasonal balance'}` : 'Seasonal guidance'}
           </p>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Quick Stats */}
-      <div className="card p-6">
-        <h2 className="text-xl font-semibold mb-4">Today&apos;s Overview</h2>
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div className="text-center">
-            <ScoreCircle score={75} size="sm" />
-            <p className="text-xs text-stone mt-2">Diet Score</p>
-          </div>
-          <div className="text-center">
-            <ScoreCircle score={4} size="sm" />
-            <p className="text-xs text-stone mt-2">Rasas Today</p>
-          </div>
-          <div className="text-center">
-            <ScoreCircle score={85} size="sm" />
-            <p className="text-xs text-stone mt-2">Compliance</p>
-          </div>
+      {/* Quick Actions */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
+      >
+        <h2 className="text-lg font-semibold text-white mb-4">Quick Actions</h2>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <QuickActionCard
+            href="/patient/chat"
+            icon={<MessageCircle className="h-5 w-5" />}
+            title="AyurOS Agent"
+            description="Ask about foods, meals, or get personalized Ayurvedic recommendations"
+            gradient="from-[#10b981] to-[#059669]"
+            tag="AI Powered"
+          />
+          <QuickActionCard
+            href="/patient/weekly-plan"
+            icon={<CalendarDays className="h-5 w-5" />}
+            title="Weekly Meal Plan"
+            description="Auto-generate your personalized 7-day diet plan"
+            gradient="from-[#c9a227] to-[#a38420]"
+          />
+          <QuickActionCard
+            href="/foods"
+            icon={<UtensilsCrossed className="h-5 w-5" />}
+            title="Browse Foods"
+            description="Explore 105+ foods scored for your constitution"
+            gradient="from-[#d35400] to-[#e67e22]"
+          />
         </div>
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm">
-            <span className="text-stone">Recommended tastes to include:</span>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {prakriti.dominant === 'vata' && (
-              <>
-                <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs">Sweet</span>
-                <span className="px-2 py-1 bg-lime-100 text-lime-700 rounded text-xs">Sour</span>
-                <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">Salty</span>
-              </>
-            )}
-            {prakriti.dominant === 'pitta' && (
-              <>
-                <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded text-xs">Sweet</span>
-                <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs">Bitter</span>
-                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">Astringent</span>
-              </>
-            )}
-            {prakriti.dominant === 'kapha' && (
-              <>
-                <span className="px-2 py-1 bg-red-100 text-red-700 rounded text-xs">Pungent</span>
-                <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-xs">Bitter</span>
-                <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded text-xs">Astringent</span>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
+      </motion.div>
 
-      {/* Top Recommended Foods */}
-      <div className="md:col-span-2">
-        <h2 className="text-xl font-semibold mb-4">Top Recommended Foods For You</h2>
-        <div className="grid md:grid-cols-5 gap-4">
-          {topFoods.map(({ food, score }) => (
-            <FoodCard key={food.id} food={food} score={score} compact />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function FoodsTab({ patient }: { patient: PatientProfile }) {
-  const [selectedCategory, setSelectedCategory] = useState<string>('all');
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const categories = ['all', ...new Set(foods.map(f => f.category))];
-
-  const filteredFoods = foods.filter(food => {
-    const matchesCategory = selectedCategory === 'all' || food.category === selectedCategory;
-    const matchesSearch = food.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         food.nameHindi?.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesCategory && matchesSearch;
-  });
-
-  const scoredFoods = getTopRecommendations(filteredFoods, patient, filteredFoods.length);
-
-  return (
-    <div className="space-y-6">
-      {/* Filters */}
-      <div className="flex flex-wrap gap-4">
-        <input
-          type="text"
-          placeholder="Search foods..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="px-4 py-2 rounded-lg border border-clay max-w-xs"
-        />
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-4 py-2 rounded-lg border border-clay"
+      {/* Health Overview */}
+      {profile.health && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
         >
-          {categories.map(cat => (
-            <option key={cat} value={cat}>
-              {cat === 'all' ? 'All Categories' : cat.replace('_', ' ')}
-            </option>
-          ))}
-        </select>
-      </div>
+          <h2 className="text-lg font-semibold text-white mb-4">Health Profile</h2>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {/* Conditions */}
+            <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+              <h3 className="text-sm font-medium text-white/60 mb-3">Conditions</h3>
+              <div className="flex flex-wrap gap-2">
+                {profile.health.conditions.length > 0 ? (
+                  profile.health.conditions.map((c: string) => (
+                    <span key={c} className="tag tag-active capitalize">{c.replace('_', ' ')}</span>
+                  ))
+                ) : (
+                  <span className="text-sm text-white/30">None specified</span>
+                )}
+              </div>
+            </div>
 
-      {/* Food Grid */}
-      <div className="grid md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {scoredFoods.map(({ food, score }) => (
-          <FoodCard key={food.id} food={food} score={score} />
-        ))}
-      </div>
+            {/* Allergies */}
+            <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+              <h3 className="text-sm font-medium text-white/60 mb-3">Allergies</h3>
+              <div className="flex flex-wrap gap-2">
+                {profile.health.allergies.length > 0 ? (
+                  profile.health.allergies.map((a: string) => (
+                    <span key={a} className="px-3 py-1 rounded-full text-xs bg-red-500/10 text-red-400 border border-red-500/20 capitalize">{a}</span>
+                  ))
+                ) : (
+                  <span className="text-sm text-white/30">None specified</span>
+                )}
+              </div>
+            </div>
+
+            {/* Diet Preference */}
+            <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+              <h3 className="text-sm font-medium text-white/60 mb-3">Diet & Goals</h3>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-white/40">Goal:</span>
+                  <span className="text-sm text-white capitalize font-medium">{profile.health.weight_goal}</span>
+                </div>
+                {profile.health.dietary_preferences.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5">
+                    {profile.health.dietary_preferences.map((p: string) => (
+                      <span key={p} className="tag capitalize">{p}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Seasonal Recommendations */}
+      {seasonInfo && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.4 }}
+          className="p-6 rounded-2xl bg-gradient-to-br from-[#4a7c59]/10 to-[#c9a227]/5 border border-[#4a7c59]/20"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="h-4 w-4 text-[#c9a227]" />
+            <h3 className="text-sm font-semibold text-white">Seasonal Recommendation — {currentSeason}</h3>
+          </div>
+          <p className="text-sm text-white/60 leading-relaxed">
+            {seasonInfo.dietaryGuidelines?.[0] ||
+              `During ${currentSeason}, focus on foods that balance your ${profile.prakriti?.dominant || 'constitutional'} tendencies. Favor seasonal produce and traditional preparations suited to this Ritu.`}
+          </p>
+        </motion.div>
+      )}
     </div>
   );
 }
 
-function MealsTab({ patient }: { patient: PatientProfile }) {
-  const [dailyPlan, setDailyPlan] = useState<ReturnType<typeof generateDailyPlan> | null>(null);
+// ── Sub-components ──
 
-  useEffect(() => {
-    const plan = generateDailyPlan(patient);
-    setDailyPlan(plan);
-  }, [patient]);
-
-  const regeneratePlan = () => {
-    const plan = generateDailyPlan(patient);
-    setDailyPlan(plan);
-  };
-
-  if (!dailyPlan) return null;
-
+function DoshaBar({ label, value, color }: { label: string; value: number; color: string }) {
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-xl font-semibold">Today&apos;s Meal Plan</h2>
-        <button onClick={regeneratePlan} className="btn btn-primary">
-          Regenerate Plan
-        </button>
+    <div>
+      <div className="flex justify-between text-xs mb-1">
+        <span className="text-white/60">{label}</span>
+        <span className="font-medium text-white">{value}%</span>
       </div>
-
-      <div className="grid md:grid-cols-2 gap-6">
-        <MealPlate meal={dailyPlan.breakfast.meal} anhScore={dailyPlan.breakfast.totalANHScore} />
-        <MealPlate meal={dailyPlan.lunch.meal} anhScore={dailyPlan.lunch.totalANHScore} />
-        <MealPlate meal={dailyPlan.dinner.meal} anhScore={dailyPlan.dinner.totalANHScore} />
-        {dailyPlan.snack && (
-          <MealPlate meal={dailyPlan.snack.meal} anhScore={dailyPlan.snack.totalANHScore} />
-        )}
+      <div className="h-1.5 rounded-full bg-white/10">
+        <motion.div
+          className="h-full rounded-full"
+          style={{ backgroundColor: color }}
+          initial={{ width: 0 }}
+          animate={{ width: `${value}%` }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+        />
       </div>
     </div>
   );
 }
 
+function QuickActionCard({
+  href,
+  icon,
+  title,
+  description,
+  gradient,
+  tag,
+}: {
+  href: string;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+  gradient: string;
+  tag?: string;
+}) {
+  return (
+    <Link href={href} className="group">
+      <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300 hover:bg-white/[0.05] h-full">
+        <div className="flex items-start justify-between mb-3">
+          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${gradient} flex items-center justify-center text-white group-hover:scale-110 transition-transform duration-300`}>
+            {icon}
+          </div>
+          {tag && (
+            <span className="text-[10px] font-medium text-[#10b981] bg-[#10b981]/10 px-2 py-0.5 rounded-full border border-[#10b981]/20">
+              {tag}
+            </span>
+          )}
+        </div>
+        <h3 className="font-semibold text-white mb-1 flex items-center gap-1">
+          {title}
+          <ArrowRight className="h-3.5 w-3.5 text-white/30 group-hover:text-white/60 group-hover:translate-x-0.5 transition-all" />
+        </h3>
+        <p className="text-xs text-white/40 leading-relaxed">{description}</p>
+      </div>
+    </Link>
+  );
+}
+
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}

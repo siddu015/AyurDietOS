@@ -159,6 +159,15 @@ export function DoshaQuiz({ onComplete }: DoshaQuizProps) {
 
   const question = questions[currentQuestion];
 
+  // Guard against undefined question (empty questions array or invalid index)
+  if (!question) {
+    return (
+      <div className="max-w-2xl mx-auto text-center p-8">
+        <p className="text-stone">Loading quiz questions...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-2xl mx-auto">
       {/* Progress Bar */}

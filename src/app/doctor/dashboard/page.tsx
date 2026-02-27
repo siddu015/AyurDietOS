@@ -1,393 +1,265 @@
 'use client';
 
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 import Link from 'next/link';
-import { PatientProfile, DoshaPrakriti, Food } from '@/lib/types';
 import { foods } from '@/lib/data';
-import { calculateANHScore, checkFoodPairCompatibility, getTopRecommendations } from '@/lib/algorithms';
-import { FoodCard } from '@/components/FoodCard';
-import { ViruddhaWarning } from '@/components/ViruddhaWarning';
-import { ScoreCircle } from '@/components/ui/ScoreCircle';
-import { DoshaBar } from '@/components/ui/DoshaBar';
+import { calculateANHScore } from '@/lib/algorithms/anhScore';
+import { checkFoodPairCompatibility } from '@/lib/algorithms/viruddhaCheck';
+import type { PatientProfile, Food } from '@/lib/types';
+import {
+  Users, ClipboardPlus, Search, Activity, AlertTriangle,
+  UtensilsCrossed, ChevronRight, ArrowRight,
+} from 'lucide-react';
 
-// Demo patients for the doctor dashboard
+// Demo patients for doctor view
 const demoPatients: PatientProfile[] = [
   {
-    id: 'patient_1',
-    name: 'Rajesh Kumar',
-    age: 45,
-    gender: 'male',
+    id: 'patient_1', name: 'Rajesh Kumar', age: 45, gender: 'male',
     prakriti: { vata: 25, pitta: 55, kapha: 20, dominant: 'pitta' },
-    conditions: ['diabetes', 'hypertension'],
-    allergies: [],
+    conditions: ['diabetes', 'hypertension'], allergies: ['peanuts'],
     dietaryPreferences: ['vegetarian'],
-    goals: { weightGoal: 'lose', dailyCalorieTarget: 1600, proteinTarget: 60, dietGoals: ['diabetes_management', 'heart_health'] },
+    goals: { weightGoal: 'lose', dailyCalorieTarget: 1600, proteinTarget: 65 },
   },
   {
-    id: 'patient_2',
-    name: 'Priya Sharma',
-    age: 32,
-    gender: 'female',
-    prakriti: { vata: 40, pitta: 30, kapha: 30, dominant: 'vata', secondary: 'pitta' },
-    conditions: ['pcod'],
-    allergies: ['dairy'],
+    id: 'patient_2', name: 'Priya Sharma', age: 32, gender: 'female',
+    prakriti: { vata: 45, pitta: 25, kapha: 30, dominant: 'vata' },
+    conditions: ['digestive_issues'], allergies: [],
     dietaryPreferences: ['vegetarian'],
-    goals: { weightGoal: 'lose', dailyCalorieTarget: 1500, proteinTarget: 55, dietGoals: ['weight_loss', 'digestive_health'] },
+    goals: { weightGoal: 'maintain', dailyCalorieTarget: 1800, proteinTarget: 55 },
   },
   {
-    id: 'patient_3',
-    name: 'Amit Patel',
-    age: 38,
-    gender: 'male',
-    prakriti: { vata: 20, pitta: 25, kapha: 55, dominant: 'kapha' },
-    conditions: ['obesity'],
-    allergies: [],
+    id: 'patient_3', name: 'Amit Patel', age: 28, gender: 'male',
+    prakriti: { vata: 15, pitta: 30, kapha: 55, dominant: 'kapha' },
+    conditions: ['obesity'], allergies: [],
     dietaryPreferences: ['non-vegetarian'],
-    goals: { weightGoal: 'lose', dailyCalorieTarget: 1400, proteinTarget: 70, dietGoals: ['weight_loss', 'energy_boost'] },
+    goals: { weightGoal: 'lose', dailyCalorieTarget: 1400, proteinTarget: 70 },
   },
 ];
 
 export default function DoctorDashboardPage() {
   const [selectedPatient, setSelectedPatient] = useState<PatientProfile | null>(null);
-  const [activeView, setActiveView] = useState<'patients' | 'compatibility' | 'foods'>('patients');
+  const [activeTab, setActiveTab] = useState<'patients' | 'compatibility' | 'foods'>('patients');
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 text-white">
       {/* Header */}
-      <div className="flex justify-between items-start">
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold mb-2">Doctor Dashboard</h1>
-          <p className="text-stone">Manage patients, create diet plans, and check food compatibility</p>
+          <h1 className="text-2xl font-bold">Doctor Dashboard</h1>
+          <p className="text-sm text-white/40">Manage patients and create diet plans</p>
         </div>
-        <Link href="/doctor/create-plan" className="btn btn-primary">
-          Create Diet Plan
+        <Link href="/doctor/create-plan" className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#4a7c59] to-[#3a6249] text-white text-sm hover:scale-105 transition-transform">
+          <ClipboardPlus className="h-4 w-4" /> Create Plan
         </Link>
-      </div>
+      </motion.div>
 
-      {/* Navigation */}
-      <div className="flex gap-2 border-b border-clay pb-2">
-        {(['patients', 'compatibility', 'foods'] as const).map(view => (
+      {/* Tabs */}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex gap-2 mb-6">
+        {[
+          { id: 'patients' as const, label: 'Patients', icon: <Users className="h-4 w-4" /> },
+          { id: 'compatibility' as const, label: 'Compatibility Check', icon: <AlertTriangle className="h-4 w-4" /> },
+          { id: 'foods' as const, label: 'Food Explorer', icon: <UtensilsCrossed className="h-4 w-4" /> },
+        ].map(tab => (
           <button
-            key={view}
-            onClick={() => setActiveView(view)}
-            className={`px-4 py-2 rounded-t-lg font-medium capitalize transition-colors ${
-              activeView === view
-                ? 'bg-secondary text-white'
-                : 'text-stone hover:text-foreground hover:bg-sand'
-            }`}
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm transition-all ${activeTab === tab.id
+              ? 'bg-white/[0.08] text-white border border-white/[0.1]'
+              : 'text-white/40 hover:text-white/60'
+              }`}
           >
-            {view === 'compatibility' ? 'Food Compatibility' : view}
+            {tab.icon} {tab.label}
           </button>
         ))}
-      </div>
+      </motion.div>
 
-      {/* Content */}
-      {activeView === 'patients' && (
-        <PatientsView 
-          patients={demoPatients} 
-          selectedPatient={selectedPatient}
-          onSelectPatient={setSelectedPatient}
-        />
-      )}
-      {activeView === 'compatibility' && (
-        <CompatibilityView />
-      )}
-      {activeView === 'foods' && (
-        <FoodsExplorerView selectedPatient={selectedPatient} />
-      )}
-    </div>
-  );
-}
-
-function PatientsView({ 
-  patients, 
-  selectedPatient, 
-  onSelectPatient 
-}: { 
-  patients: PatientProfile[]; 
-  selectedPatient: PatientProfile | null;
-  onSelectPatient: (p: PatientProfile | null) => void;
-}) {
-  return (
-    <div className="grid md:grid-cols-3 gap-6">
-      {/* Patient List */}
-      <div className="space-y-4">
-        <h2 className="text-lg font-semibold">Patients</h2>
-        {patients.map(patient => (
-          <div
-            key={patient.id}
-            onClick={() => onSelectPatient(patient)}
-            className={`card p-4 cursor-pointer ${
-              selectedPatient?.id === patient.id ? 'ring-2 ring-secondary' : ''
-            }`}
-          >
-            <div className="flex justify-between items-start mb-2">
-              <div>
-                <h3 className="font-medium">{patient.name}</h3>
-                <p className="text-sm text-stone">{patient.age} years, {patient.gender}</p>
-              </div>
-              <span className={`px-2 py-0.5 rounded text-xs font-medium ${
-                patient.prakriti.dominant === 'vata' ? 'badge-vata' :
-                patient.prakriti.dominant === 'pitta' ? 'badge-pitta' : 'badge-kapha'
-              }`}>
-                {patient.prakriti.dominant}
-              </span>
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {patient.conditions.map(condition => (
-                <span key={condition} className="px-2 py-0.5 bg-sand text-stone rounded text-xs">
-                  {condition}
-                </span>
-              ))}
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Patient Details */}
-      <div className="md:col-span-2">
-        {selectedPatient ? (
-          <PatientDetails patient={selectedPatient} />
-        ) : (
-          <div className="card p-8 text-center">
-            <p className="text-stone">Select a patient to view details</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function PatientDetails({ patient }: { patient: PatientProfile }) {
-  const topFoods = getTopRecommendations(foods, patient, 6);
-
-  return (
-    <div className="space-y-6">
-      {/* Profile Card */}
-      <div className="card p-6">
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h2 className="text-xl font-semibold">{patient.name}</h2>
-            <p className="text-stone">{patient.age} years, {patient.gender}</p>
-          </div>
-          <Link 
-            href={`/doctor/create-plan?patient=${patient.id}`}
-            className="btn btn-secondary text-sm"
-          >
-            Create Plan
-          </Link>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-6">
-          {/* Prakriti */}
-          <div>
-            <h3 className="font-medium mb-3">Prakriti</h3>
-            <DoshaBar prakriti={patient.prakriti} />
+      {activeTab === 'patients' && (
+        <div className="grid lg:grid-cols-3 gap-6">
+          {/* Patient List */}
+          <div className="space-y-3">
+            <h2 className="text-sm font-semibold text-white/50 mb-3">Patients ({demoPatients.length})</h2>
+            {demoPatients.map(p => (
+              <button
+                key={p.id}
+                onClick={() => setSelectedPatient(p)}
+                className={`w-full text-left p-4 rounded-xl border transition-all ${selectedPatient?.id === p.id
+                  ? 'bg-[#c9a227]/10 border-[#c9a227]/30'
+                  : 'bg-white/[0.03] border-white/[0.06] hover:bg-white/[0.06]'
+                  }`}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#4a7c59] to-[#c9a227] flex items-center justify-center font-bold text-sm">
+                    {p.name.charAt(0)}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-white text-sm">{p.name}</p>
+                    <p className="text-xs text-white/40">{p.age}y · {p.gender} · <span className="capitalize">{p.prakriti.dominant}</span></p>
+                  </div>
+                  <ChevronRight className="h-4 w-4 text-white/20" />
+                </div>
+              </button>
+            ))}
           </div>
 
-          {/* Health Info */}
-          <div>
-            <h3 className="font-medium mb-3">Health Profile</h3>
-            <div className="space-y-2">
-              <div>
-                <span className="text-sm text-stone">Conditions: </span>
-                {patient.conditions.length > 0 ? (
-                  <span className="text-sm">{patient.conditions.join(', ')}</span>
-                ) : (
-                  <span className="text-sm text-stone">None</span>
-                )}
+          {/* Patient Details */}
+          <div className="lg:col-span-2">
+            {selectedPatient ? (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+                <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+                  <h2 className="text-lg font-bold text-white mb-4">{selectedPatient.name}</h2>
+                  <div className="grid grid-cols-3 gap-4">
+                    {(['vata', 'pitta', 'kapha'] as const).map(d => (
+                      <div key={d}>
+                        <div className="flex justify-between text-xs mb-1">
+                          <span className="text-white/50 capitalize">{d}</span>
+                          <span className="text-white">{selectedPatient.prakriti[d]}%</span>
+                        </div>
+                        <div className="h-1.5 rounded-full bg-white/10">
+                          <div className="h-full rounded-full bg-gradient-to-r from-[#4a7c59] to-[#c9a227]" style={{ width: `${selectedPatient.prakriti[d]}%` }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                    <p className="text-xs text-white/40 mb-2">Conditions</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedPatient.conditions.map(c => (
+                        <span key={c} className="px-2 py-0.5 rounded bg-white/[0.08] text-white/60 capitalize text-xs">{c.replace('_', ' ')}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                    <p className="text-xs text-white/40 mb-2">Goals</p>
+                    <p className="text-sm text-white capitalize">{selectedPatient.goals.weightGoal} weight</p>
+                    <p className="text-xs text-white/40">{selectedPatient.goals.dailyCalorieTarget} kcal · {selectedPatient.goals.proteinTarget}g protein</p>
+                  </div>
+                </div>
+
+                {/* Top Foods */}
+                <div className="p-5 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+                  <h3 className="text-sm font-semibold text-white/60 mb-3">Top Scored Foods</h3>
+                  <div className="space-y-2">
+                    {foods.slice(0, 8).map(f => {
+                      const score = calculateANHScore(f, selectedPatient);
+                      return (
+                        <div key={f.id} className="flex items-center justify-between py-1.5">
+                          <span className="text-sm text-white/70">{f.name}</span>
+                          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${score.totalScore >= 70 ? 'bg-green-500/15 text-green-400' :
+                            score.totalScore >= 50 ? 'bg-yellow-500/15 text-yellow-400' :
+                              'bg-red-500/15 text-red-400'
+                            }`}>{score.totalScore}</span>
+                        </div>
+                      );
+                    }).sort((a, b) => 0)}
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              <div className="p-8 rounded-2xl bg-white/[0.02] border border-white/[0.04] text-center">
+                <Users className="h-8 w-8 text-white/15 mx-auto mb-3" />
+                <p className="text-sm text-white/30">Select a patient to view details</p>
               </div>
-              <div>
-                <span className="text-sm text-stone">Allergies: </span>
-                {patient.allergies.length > 0 ? (
-                  <span className="text-sm">{patient.allergies.join(', ')}</span>
-                ) : (
-                  <span className="text-sm text-stone">None</span>
-                )}
-              </div>
-              <div>
-                <span className="text-sm text-stone">Diet: </span>
-                <span className="text-sm">{patient.dietaryPreferences.join(', ')}</span>
-              </div>
-              <div>
-                <span className="text-sm text-stone">Goals: </span>
-                <span className="text-sm">{(patient.goals.dietGoals || []).join(', ').replace(/_/g, ' ')}</span>
-              </div>
-            </div>
+            )}
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Recommended Foods */}
-      <div>
-        <h3 className="font-semibold mb-4">Top Recommended Foods</h3>
-        <div className="grid md:grid-cols-3 gap-4">
-          {topFoods.map(({ food, score }) => (
-            <FoodCard key={food.id} food={food} score={score} compact />
-          ))}
-        </div>
-      </div>
+      {activeTab === 'compatibility' && <CompatibilityView />}
+      {activeTab === 'foods' && <FoodsExplorerView selectedPatient={selectedPatient} />}
     </div>
   );
 }
 
 function CompatibilityView() {
-  const [food1, setFood1] = useState<string>('');
-  const [food2, setFood2] = useState<string>('');
-  const [result, setResult] = useState<ReturnType<typeof checkFoodPairCompatibility> | null>(null);
+  const [food1, setFood1] = useState('');
+  const [food2, setFood2] = useState('');
+  const [result, setResult] = useState<{ isCompatible: boolean; warnings: { message: string; rule: { severity: string } }[] } | null>(null);
 
   const handleCheck = () => {
-    if (food1 && food2) {
-      const f1 = foods.find(f => f.id === food1);
-      const f2 = foods.find(f => f.id === food2);
-      if (f1 && f2) {
-        const checkResult = checkFoodPairCompatibility(f1, f2);
-        setResult(checkResult);
-      }
+    const f1 = foods.find(f => f.name.toLowerCase().includes(food1.toLowerCase()));
+    const f2 = foods.find(f => f.name.toLowerCase().includes(food2.toLowerCase()));
+    if (f1 && f2) {
+      const r = checkFoodPairCompatibility(f1, f2);
+      setResult(r);
     }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="card p-6">
-        <h2 className="text-xl font-semibold mb-4">Viruddha Aahara Checker</h2>
-        <p className="text-stone mb-6">
-          Check if two foods are compatible according to Ayurvedic principles
-        </p>
-
-        <div className="grid md:grid-cols-3 gap-4 mb-6">
-          <div>
-            <label className="block text-sm font-medium mb-2">Food 1</label>
-            <select
-              value={food1}
-              onChange={(e) => setFood1(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-clay"
-            >
-              <option value="">Select a food...</option>
-              {foods.map(food => (
-                <option key={food.id} value={food.id}>
-                  {food.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex items-end justify-center pb-2">
-            <span className="text-2xl text-stone">+</span>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Food 2</label>
-            <select
-              value={food2}
-              onChange={(e) => setFood2(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border border-clay"
-            >
-              <option value="">Select a food...</option>
-              {foods.map(food => (
-                <option key={food.id} value={food.id}>
-                  {food.name}
-                </option>
-              ))}
-            </select>
-          </div>
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="max-w-2xl">
+      <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06]">
+        <h2 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
+          <AlertTriangle className="h-5 w-5 text-[#d35400]" /> Viruddha Aahara Check
+        </h2>
+        <div className="grid sm:grid-cols-2 gap-3 mb-4">
+          <input
+            placeholder="First food (e.g. milk)"
+            value={food1}
+            onChange={e => setFood1(e.target.value)}
+            className="px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-[#c9a227]/40"
+          />
+          <input
+            placeholder="Second food (e.g. fish)"
+            value={food2}
+            onChange={e => setFood2(e.target.value)}
+            className="px-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-[#c9a227]/40"
+          />
         </div>
-
         <button
           onClick={handleCheck}
           disabled={!food1 || !food2}
-          className="btn btn-secondary w-full disabled:opacity-50"
+          className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#d35400] to-[#e67e22] text-white text-sm disabled:opacity-40"
         >
           Check Compatibility
         </button>
+
+        {result && (
+          <div className={`mt-4 p-4 rounded-xl border ${result.isCompatible ? 'bg-green-500/5 border-green-500/20' : 'bg-red-500/5 border-red-500/20'}`}>
+            <p className={`font-medium text-sm ${result.isCompatible ? 'text-green-400' : 'text-red-400'}`}>
+              {result.isCompatible ? '✅ These foods are compatible!' : '⚠️ Viruddha Aahara detected!'}
+            </p>
+            {result.warnings.map((w, i) => (
+              <p key={i} className="text-sm text-white/50 mt-2">{w.message}</p>
+            ))}
+          </div>
+        )}
       </div>
-
-      {/* Results */}
-      {result && (
-        <div className="animate-fade-in">
-          <ViruddhaWarning warnings={result.warnings} />
-        </div>
-      )}
-
-      {/* Common Incompatible Pairs */}
-      <div className="card p-6">
-        <h3 className="font-semibold mb-4">Common Incompatible Combinations</h3>
-        <div className="grid md:grid-cols-2 gap-4">
-          <IncompatiblePair foods={['Fish', 'Milk']} severity="severe" />
-          <IncompatiblePair foods={['Honey (heated)', 'Any hot food']} severity="severe" />
-          <IncompatiblePair foods={['Honey', 'Ghee (equal quantity)']} severity="severe" />
-          <IncompatiblePair foods={['Milk', 'Banana']} severity="moderate" />
-          <IncompatiblePair foods={['Yogurt', 'Night time']} severity="moderate" />
-          <IncompatiblePair foods={['Milk', 'Citrus fruits']} severity="moderate" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function IncompatiblePair({ foods, severity }: { foods: [string, string]; severity: string }) {
-  const colors = {
-    severe: 'border-severe bg-severe/5',
-    moderate: 'border-moderate bg-moderate/5',
-    mild: 'border-mild bg-mild/5',
-  };
-
-  return (
-    <div className={`p-3 rounded-lg border-l-4 ${colors[severity as keyof typeof colors]}`}>
-      <div className="flex items-center gap-2">
-        <span className="font-medium">{foods[0]}</span>
-        <span className="text-stone">+</span>
-        <span className="font-medium">{foods[1]}</span>
-      </div>
-      <span className={`text-xs capitalize ${
-        severity === 'severe' ? 'text-severe' :
-        severity === 'moderate' ? 'text-moderate' : 'text-mild'
-      }`}>
-        {severity} incompatibility
-      </span>
-    </div>
+    </motion.div>
   );
 }
 
 function FoodsExplorerView({ selectedPatient }: { selectedPatient: PatientProfile | null }) {
   const [search, setSearch] = useState('');
-  
-  const filteredFoods = foods.filter(f => 
-    f.name.toLowerCase().includes(search.toLowerCase()) ||
-    f.nameHindi?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const scoredFoods = selectedPatient 
-    ? getTopRecommendations(filteredFoods, selectedPatient, filteredFoods.length)
-    : filteredFoods.map(food => ({ food, score: undefined }));
+  const filtered = foods.filter(f => f.name.toLowerCase().includes(search.toLowerCase())).slice(0, 20);
 
   return (
-    <div className="space-y-6">
-      <div className="flex gap-4 items-center">
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+      <div className="relative mb-4 max-w-lg">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-white/30" />
         <input
-          type="text"
           placeholder="Search foods..."
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="px-4 py-2 rounded-lg border border-clay flex-1 max-w-md"
+          onChange={e => setSearch(e.target.value)}
+          className="w-full pl-11 pr-4 py-3 rounded-xl bg-white/[0.05] border border-white/[0.08] text-white placeholder-white/30 focus:outline-none focus:border-[#c9a227]/40"
         />
-        {!selectedPatient && (
-          <p className="text-sm text-stone">
-            Select a patient to see personalized scores
-          </p>
-        )}
       </div>
-
-      <div className="grid md:grid-cols-4 gap-4">
-        {scoredFoods.map(({ food, score }) => (
-          <FoodCard 
-            key={food.id} 
-            food={food} 
-            score={score as any}
-          />
-        ))}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        {filtered.map(f => {
+          const score = selectedPatient ? calculateANHScore(f, selectedPatient) : null;
+          return (
+            <div key={f.id} className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+              <div className="flex justify-between items-start mb-1">
+                <h3 className="font-medium text-sm text-white">{f.name}</h3>
+                {score && <span className="text-xs font-bold text-[#c9a227]">{score.totalScore}</span>}
+              </div>
+              <p className="text-xs text-white/40">{f.nutrition.calories} kcal · {f.nutrition.protein}g protein · <span className="capitalize">{f.category.replace('_', ' ')}</span></p>
+            </div>
+          );
+        })}
       </div>
-    </div>
+    </motion.div>
   );
 }
-

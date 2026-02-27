@@ -1,31 +1,21 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { DoshaQuiz } from '@/components/DoshaQuiz';
-import { PrakritiQuizResult } from '@/lib/types';
 
-export default function PatientOnboardingPage() {
+// Redirect old onboarding path to the new one
+export default function PatientOnboardingRedirect() {
   const router = useRouter();
-
-  const handleQuizComplete = (result: PrakritiQuizResult) => {
-    // Store the result in localStorage for demo purposes
-    // In production, this would be sent to a backend
-    localStorage.setItem('patientPrakriti', JSON.stringify(result));
-    router.push('/patient/dashboard');
-  };
+  useEffect(() => {
+    router.replace('/onboarding');
+  }, [router]);
 
   return (
-    <div className="py-8">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-2">Discover Your Prakriti</h1>
-        <p className="text-stone max-w-xl mx-auto">
-          Answer these questions about your physical and mental characteristics 
-          to determine your Ayurvedic body constitution (Prakriti).
-        </p>
+    <div className="min-h-screen bg-[#0a0a0a] flex items-center justify-center">
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-10 h-10 rounded-full border-2 border-[#c9a227] border-t-transparent animate-spin" />
+        <p className="text-white/50 text-sm">Redirecting to onboarding...</p>
       </div>
-      
-      <DoshaQuiz onComplete={handleQuizComplete} />
     </div>
   );
 }
-

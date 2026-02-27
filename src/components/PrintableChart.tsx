@@ -66,7 +66,7 @@ export function PrintableChart({
       <div className="print:hidden mb-4 flex gap-2">
         <button
           onClick={handlePrint}
-          className="px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary-dark flex items-center gap-2"
+          className="px-4 py-2 bg-gradient-to-r from-[#4a7c59] to-[#c9a227] text-white rounded-lg hover:opacity-90 flex items-center gap-2 transition-all"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
@@ -75,21 +75,16 @@ export function PrintableChart({
           </svg>
           Print Diet Chart
         </button>
-        <button
-          onClick={() => {
-            // Export as PDF would require a library like html2pdf
-            alert('PDF export would require additional libraries. Use browser Print to PDF for now.');
-          }}
-          className="px-4 py-2 bg-sand text-stone rounded-lg hover:bg-clay"
-        >
-          Export PDF
-        </button>
+        <span className="text-sm text-white/40">
+          Tip: Use Print and select &quot;Save as PDF&quot; to export
+        </span>
       </div>
 
       {/* Printable Content */}
       <div 
         ref={printRef}
-        className="bg-white p-8 max-w-4xl mx-auto print:max-w-none print:p-4"
+        id="printable-diet-chart"
+        className="bg-white text-gray-900 p-8 max-w-4xl mx-auto print:max-w-none print:p-4 rounded-2xl"
         style={{ fontFamily: 'Georgia, serif' }}
       >
         {/* Header / Letterhead */}
@@ -316,8 +311,14 @@ export function PrintableChart({
           .print\\:hidden {
             display: none !important;
           }
-          ${printRef.current ? `#${printRef.current.id}, #${printRef.current.id} *` : ''} {
+          #printable-diet-chart, #printable-diet-chart * {
             visibility: visible;
+          }
+          #printable-diet-chart {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
           }
           @page {
             size: A4;

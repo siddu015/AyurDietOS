@@ -33,7 +33,7 @@ export function ScoreCircle({ score, size = 'md', label, showAnimation = true }:
       <div className="relative" style={{ width: config.width, height: config.width }}>
         <svg className="transform -rotate-90" width={config.width} height={config.width}>
           <circle
-            className="stroke-sand"
+            className="stroke-white/10"
             strokeWidth={config.stroke}
             fill="transparent"
             r={radius}
@@ -61,7 +61,7 @@ export function ScoreCircle({ score, size = 'md', label, showAnimation = true }:
         </div>
       </div>
       {label && (
-        <span className="mt-2 text-sm text-stone font-medium">{label}</span>
+        <span className="mt-2 text-sm text-white/50 font-medium">{label}</span>
       )}
     </div>
   );

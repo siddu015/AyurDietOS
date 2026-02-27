@@ -540,3 +540,5 @@ export function getTemplatesForDosha(dosha: DoshaType): MealTemplate[] {
   return mealTemplates.filter(t => t.doshaFocus === dosha);
 }
 
+
+

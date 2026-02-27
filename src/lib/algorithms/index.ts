@@ -42,4 +42,3 @@ export {
   getDoshaSubstitutes,
 } from './substitution';
 export type { SubstitutionResult, SubstitutionReason } from './substitution';
-

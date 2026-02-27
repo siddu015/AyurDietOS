@@ -39,3 +39,5 @@ export const categoryCounts = Object.entries(foodsByCategory).reduce((acc, [cate
   return acc;
 }, {} as Record<string, number>);
 
+
+

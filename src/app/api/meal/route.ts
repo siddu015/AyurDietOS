@@ -45,16 +45,13 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Generate meal
-    // FUTURE: Replace with ML model call
-    // Example:
-    // const composedMeal = await mlMealGenerator.generate({ patient, mealType, constraints });
-    
+    const startTime = performance.now();
     const composedMeal = composeMeal(
       patient as PatientProfile, 
       mealType as MealType, 
       constraints
     );
+    const elapsed = performance.now() - startTime;
 
     return NextResponse.json({
       success: true,
@@ -81,6 +78,11 @@ export async function POST(request: NextRequest) {
       _meta: {
         algorithm: 'csp-greedy-v1',
         timestamp: new Date().toISOString(),
+        computeTimeMs: Math.round(elapsed * 100) / 100,
+        constraintSatisfactionRate: composedMeal.constraintsSatisfied ? 100 : (
+          Object.values(composedMeal.constraintDetails).filter(Boolean).length /
+          Object.values(composedMeal.constraintDetails).length * 100
+        ),
       }
     });
 
@@ -112,10 +114,10 @@ export async function GET(request: NextRequest) {
 
     const patient: PatientProfile = JSON.parse(patientJson);
 
-    // Generate daily plan
+    const startTime = performance.now();
     const dailyPlan = generateDailyPlan(patient);
+    const elapsed = performance.now() - startTime;
 
-    // Transform response
     const transformMeal = (composed: typeof dailyPlan.breakfast) => ({
       meal: {
         id: composed.meal.id,
@@ -145,6 +147,14 @@ export async function GET(request: NextRequest) {
       _meta: {
         algorithm: 'csp-greedy-v1',
         timestamp: new Date().toISOString(),
+        computeTimeMs: Math.round(elapsed * 100) / 100,
+        mealsGenerated: dailyPlan.snack ? 4 : 3,
+        allConstraintsSatisfied: [
+          dailyPlan.breakfast.constraintsSatisfied,
+          dailyPlan.lunch.constraintsSatisfied,
+          dailyPlan.dinner.constraintsSatisfied,
+          ...(dailyPlan.snack ? [dailyPlan.snack.constraintsSatisfied] : []),
+        ].every(Boolean),
       }
     });
 

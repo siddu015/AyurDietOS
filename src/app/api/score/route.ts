@@ -51,21 +51,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Calculate ANH score
-    // FUTURE: This is where you'd call your trained ML model API instead
-    // Example:
-    // const score = await mlModelClient.predict({ food, patient, config });
-    
+    const startTime = performance.now();
     const score = calculateANHScore(food, patient as PatientProfile, config);
+    const elapsed = performance.now() - startTime;
 
     return NextResponse.json({
       success: true,
       data: score,
-      // Metadata for debugging/monitoring
       _meta: {
         algorithm: 'rule-based-v1',
         timestamp: new Date().toISOString(),
-        // FUTURE: Add model version, inference time, etc.
+        computeTimeMs: Math.round(elapsed * 100) / 100,
+        foodId,
       }
     });
 
@@ -98,7 +95,7 @@ export async function GET(request: NextRequest) {
 
     const patient: PatientProfile = JSON.parse(patientJson);
 
-    // Rank all foods for patient
+    const startTime = performance.now();
     const rankedFoods = rankFoodsForPatient(foods, patient)
       .slice(0, limit)
       .map(({ food, score }) => ({
@@ -109,12 +106,19 @@ export async function GET(request: NextRequest) {
         ayurvedicScore: score.ayurvedicScore,
         nutritionalScore: score.nutritionalScore,
       }));
+    const elapsed = performance.now() - startTime;
 
     return NextResponse.json({
       success: true,
       data: rankedFoods,
       total: foods.length,
       limit,
+      _meta: {
+        algorithm: 'rule-based-v1',
+        timestamp: new Date().toISOString(),
+        computeTimeMs: Math.round(elapsed * 100) / 100,
+        foodsScored: foods.length,
+      }
     });
 
   } catch (error) {

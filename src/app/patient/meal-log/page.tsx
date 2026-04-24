@@ -53,7 +53,7 @@ export default function MealLogPage() {
                         const p = data.prakriti;
                         setPatient({
                             id: data.user.id, name: data.user.name, age: data.user.age, gender: data.user.gender,
-                            prakriti: { vata: p.vata / 100, pitta: p.pitta / 100, kapha: p.kapha / 100, dominant: p.dominant },
+                            prakriti: { vata: p.vata, pitta: p.pitta, kapha: p.kapha, dominant: p.dominant },
                             conditions: data.health?.conditions || [], allergies: data.health?.allergies || [],
                             dietaryPreferences: data.health?.dietary_preferences || [],
                             goals: {

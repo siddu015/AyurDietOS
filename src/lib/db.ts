@@ -12,6 +12,7 @@ function getDb(): Database.Database {
         _db.pragma('journal_mode = WAL');
         _db.pragma('foreign_keys = ON');
         initSchema();
+        migrate();
     }
     return _db;
 }
@@ -24,6 +25,7 @@ function initSchema() {
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,
       email TEXT UNIQUE NOT NULL,
+      password_hash TEXT,
       age INTEGER,
       gender TEXT,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -31,7 +33,7 @@ function initSchema() {
 
     CREATE TABLE IF NOT EXISTS prakriti (
       id TEXT PRIMARY KEY,
-      user_id TEXT NOT NULL REFERENCES users(id),
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       vata INTEGER NOT NULL,
       pitta INTEGER NOT NULL,
       kapha INTEGER NOT NULL,
@@ -42,7 +44,7 @@ function initSchema() {
 
     CREATE TABLE IF NOT EXISTS user_health (
       id TEXT PRIMARY KEY,
-      user_id TEXT NOT NULL REFERENCES users(id),
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       conditions TEXT DEFAULT '[]',
       allergies TEXT DEFAULT '[]',
       dietary_preferences TEXT DEFAULT '[]',
@@ -53,7 +55,7 @@ function initSchema() {
 
     CREATE TABLE IF NOT EXISTS chat_messages (
       id TEXT PRIMARY KEY,
-      user_id TEXT NOT NULL REFERENCES users(id),
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       role TEXT NOT NULL,
       content TEXT NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -61,7 +63,7 @@ function initSchema() {
 
     CREATE TABLE IF NOT EXISTS meal_logs (
       id TEXT PRIMARY KEY,
-      user_id TEXT NOT NULL REFERENCES users(id),
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
       meal_type TEXT NOT NULL,
       food_items TEXT NOT NULL DEFAULT '[]',
       total_calories REAL DEFAULT 0,
@@ -72,25 +74,48 @@ function initSchema() {
       logged_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
-    CREATE TABLE IF NOT EXISTS diet_plans (
-      id TEXT PRIMARY KEY,
-      user_id TEXT NOT NULL REFERENCES users(id),
-      name TEXT NOT NULL,
-      plan_data TEXT NOT NULL,
-      condition TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    CREATE TABLE IF NOT EXISTS sessions (
+      token TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+      expires_at DATETIME NOT NULL
     );
+
+    CREATE INDEX IF NOT EXISTS idx_prakriti_user_id ON prakriti(user_id);
+    CREATE INDEX IF NOT EXISTS idx_prakriti_assessed_at ON prakriti(user_id, assessed_at DESC);
+    CREATE INDEX IF NOT EXISTS idx_user_health_user_id ON user_health(user_id);
+    CREATE INDEX IF NOT EXISTS idx_chat_messages_user_id ON chat_messages(user_id, created_at DESC);
+    CREATE INDEX IF NOT EXISTS idx_meal_logs_user_id ON meal_logs(user_id, logged_at DESC);
+    CREATE INDEX IF NOT EXISTS idx_sessions_user_id ON sessions(user_id);
+    CREATE INDEX IF NOT EXISTS idx_sessions_expires_at ON sessions(expires_at);
   `);
+}
+
+/** Ensure columns added after initial release exist on older DBs. */
+function migrate() {
+    const database = _db!;
+    const cols = database.prepare(`PRAGMA table_info(users)`).all() as { name: string }[];
+    if (!cols.some(c => c.name === 'password_hash')) {
+        database.exec(`ALTER TABLE users ADD COLUMN password_hash TEXT`);
+    }
+    // Drop legacy unused diet_plans table if present
+    try {
+        database.exec(`DROP TABLE IF EXISTS diet_plans`);
+    } catch {
+        // ignore
+    }
 }
 
 // ── User CRUD ──
 
-export function createUser(data: { name: string; email: string; age?: number; gender?: string }) {
+export function createUser(data: {
+    name: string; email: string; passwordHash?: string; age?: number; gender?: string;
+}) {
     const database = getDb();
     const id = uuidv4();
     database.prepare(
-        'INSERT INTO users (id, name, email, age, gender) VALUES (?, ?, ?, ?, ?)'
-    ).run(id, data.name, data.email, data.age ?? null, data.gender ?? null);
+        'INSERT INTO users (id, name, email, password_hash, age, gender) VALUES (?, ?, ?, ?, ?, ?)'
+    ).run(id, data.name, data.email, data.passwordHash ?? null, data.age ?? null, data.gender ?? null);
     return { id, ...data };
 }
 
@@ -173,11 +198,15 @@ export function getUserHealth(userId: string) {
     const database = getDb();
     const row = database.prepare('SELECT * FROM user_health WHERE user_id = ?').get(userId) as Record<string, unknown> | undefined;
     if (!row) return null;
+    const safeParse = <T>(v: unknown, fallback: T): T => {
+        if (typeof v !== 'string') return fallback;
+        try { return JSON.parse(v) as T; } catch { return fallback; }
+    };
     return {
         ...row,
-        conditions: JSON.parse(row.conditions as string),
-        allergies: JSON.parse(row.allergies as string),
-        dietary_preferences: JSON.parse(row.dietary_preferences as string),
+        conditions: safeParse<string[]>(row.conditions, []),
+        allergies: safeParse<string[]>(row.allergies, []),
+        dietary_preferences: safeParse<string[]>(row.dietary_preferences, []),
     };
 }
 
@@ -223,6 +252,39 @@ export function getMealLogs(userId: string, limit = 20) {
     ).all(userId, limit) as Record<string, unknown>[];
 }
 
+// ── Sessions ──
+
+export function createSession(userId: string, token: string, ttlMs: number) {
+    const database = getDb();
+    const expiresAt = new Date(Date.now() + ttlMs).toISOString();
+    database.prepare(
+        'INSERT INTO sessions (token, user_id, expires_at) VALUES (?, ?, ?)'
+    ).run(token, userId, expiresAt);
+}
+
+export function getSession(token: string): { userId: string; expiresAt: string } | null {
+    const database = getDb();
+    const row = database.prepare(
+        'SELECT user_id, expires_at FROM sessions WHERE token = ?'
+    ).get(token) as { user_id: string; expires_at: string } | undefined;
+    if (!row) return null;
+    if (new Date(row.expires_at).getTime() < Date.now()) {
+        deleteSession(token);
+        return null;
+    }
+    return { userId: row.user_id, expiresAt: row.expires_at };
+}
+
+export function deleteSession(token: string) {
+    const database = getDb();
+    database.prepare('DELETE FROM sessions WHERE token = ?').run(token);
+}
+
+export function purgeExpiredSessions() {
+    const database = getDb();
+    database.prepare('DELETE FROM sessions WHERE expires_at < ?').run(new Date().toISOString());
+}
+
 // ── Direct DB access (for advanced queries) ──
 export { getDb as getDatabase };
 export const db = {
@@ -236,5 +298,11 @@ export function getFullProfile(userId: string) {
     if (!user) return null;
     const prakriti = getLatestPrakriti(userId);
     const health = getUserHealth(userId);
+    // Never expose the password hash in responses
+    if (user && 'password_hash' in user) {
+        const { password_hash: _ignored, ...safeUser } = user;
+        void _ignored;
+        return { user: safeUser, prakriti, health };
+    }
     return { user, prakriti, health };
 }

@@ -14,6 +14,7 @@ export interface OnboardingData {
     // Step 1: Basic Info
     name: string;
     email: string;
+    password: string;
     age: number;
     gender: string;
     // Step 2: Prakriti
@@ -47,6 +48,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     const [formData, setFormData] = useState<OnboardingData>({
         name: '',
         email: '',
+        password: '',
         age: 25,
         gender: '',
         prakritiCompleted: false,
@@ -69,7 +71,13 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     const canProceed = (): boolean => {
         switch (currentStep) {
             case 0:
-                return formData.name.trim().length > 0 && formData.email.trim().length > 0 && formData.gender.length > 0;
+                return (
+                    formData.name.trim().length > 0 &&
+                    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim()) &&
+                    formData.password.length >= 8 &&
+                    formData.gender.length > 0 &&
+                    formData.age > 0 && formData.age < 120
+                );
             case 1:
                 return formData.prakritiCompleted;
             case 2:

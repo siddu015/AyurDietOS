@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
 
       case 'meal': {
         const { foods: mealFoods } = body;
-        
+
         if (!mealFoods || !Array.isArray(mealFoods)) {
           return NextResponse.json(
             { success: false, error: 'Missing required field: foods (array)' },
@@ -98,18 +98,33 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        // Build meal object
+        const unknownFoodIds: string[] = [];
         const mealItems: MealItem[] = mealFoods
           .map((item: { foodId: string; quantity: number }) => {
             const food = getFoodById(item.foodId);
-            return food ? {
+            if (!food) {
+              unknownFoodIds.push(item.foodId);
+              return null;
+            }
+            return {
               foodId: item.foodId,
               food,
               quantity: item.quantity || 1,
               unit: food.servingSize,
-            } : null;
+            };
           })
           .filter(Boolean) as MealItem[];
+
+        if (unknownFoodIds.length > 0) {
+          return NextResponse.json(
+            {
+              success: false,
+              error: `Unknown food id(s): ${unknownFoodIds.join(', ')}. Cannot validate a meal with unresolved foods.`,
+              unknownFoodIds,
+            },
+            { status: 400 }
+          );
+        }
 
         const meal: Meal = {
           id: 'validation_temp',
@@ -186,7 +201,7 @@ export async function POST(request: NextRequest) {
         computeTimeMs: Math.round((performance.now() - startTime) * 100) / 100,
         pairsChecked,
         violationsDetected: result.warnings.length,
-        detectionAccuracy: 'rule-based-100%',
+        rulesLoaded: (await import('@/lib/data')).viruddhaRules.length,
       }
     });
 
@@ -200,8 +215,8 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * GET /api/validate/rules
- * 
+ * GET /api/validate
+ *
  * Get all viruddha rules for reference.
  */
 export async function GET(request: NextRequest) {

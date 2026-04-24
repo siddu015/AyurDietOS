@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { User, Mail, Calendar, Activity, Heart, Shield, Target, Edit3 } from 'lucide-react';
+import Link from 'next/link';
+import { User, Mail, Calendar, Activity, Heart, Shield, Target, Edit3, AlertTriangle, RefreshCw } from 'lucide-react';
 
 interface ProfileData {
     user: { id: string; name: string; email: string; age: number; gender: string; created_at: string };
@@ -13,14 +14,35 @@ interface ProfileData {
 export default function ProfilePage() {
     const [profile, setProfile] = useState<ProfileData | null>(null);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const loadProfile = () => {
+        const userId = localStorage.getItem('ayurdiet_user_id');
+        if (!userId) {
+            setError('Not signed in');
+            setLoading(false);
+            return;
+        }
+        setLoading(true);
+        setError(null);
+        fetch(`/api/users?id=${userId}`)
+            .then((res) => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.json();
+            })
+            .then((data) => {
+                if (!data?.user) throw new Error('Profile not found');
+                setProfile(data);
+                setLoading(false);
+            })
+            .catch((e) => {
+                setError(e?.message || 'Failed to load profile');
+                setLoading(false);
+            });
+    };
 
     useEffect(() => {
-        const userId = localStorage.getItem('ayurdiet_user_id');
-        if (!userId) return;
-        fetch(`/api/users?id=${userId}`)
-            .then((res) => res.json())
-            .then((data) => { setProfile(data); setLoading(false); })
-            .catch(() => setLoading(false));
+        loadProfile();
     }, []);
 
     if (loading) {
@@ -31,7 +53,33 @@ export default function ProfilePage() {
         );
     }
 
-    if (!profile) return null;
+    if (error || !profile) {
+        return (
+            <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+                <div className="w-14 h-14 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-4">
+                    <AlertTriangle className="h-6 w-6 text-red-400" />
+                </div>
+                <h2 className="text-xl font-bold text-white mb-2">Profile unavailable</h2>
+                <p className="text-sm text-white/50 mb-6 max-w-md">
+                    {error || 'We could not load your profile. Try again or re-run onboarding.'}
+                </p>
+                <div className="flex gap-3">
+                    <button
+                        onClick={loadProfile}
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#c9a227] hover:bg-[#d4ae2f] text-white text-sm font-medium transition-colors"
+                    >
+                        <RefreshCw className="h-4 w-4" /> Retry
+                    </button>
+                    <Link
+                        href="/onboarding"
+                        className="px-5 py-2.5 rounded-xl border border-white/15 text-white/70 hover:bg-white/5 text-sm font-medium transition-colors"
+                    >
+                        Re-run onboarding
+                    </Link>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="max-w-4xl space-y-8">

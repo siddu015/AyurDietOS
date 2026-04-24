@@ -77,10 +77,10 @@ export default function Home() {
                 <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
-                href="/doctor/dashboard"
+                href="/foods"
                 className="flex items-center justify-center gap-2 px-8 py-3.5 rounded-xl border border-white/15 text-white/80 font-medium hover:bg-white/5 hover:border-white/25 transition-all duration-300"
               >
-                Doctor Dashboard
+                Browse Foods
               </Link>
             </div>
           </motion.div>
@@ -120,9 +120,9 @@ export default function Home() {
           transition={{ duration: 0.8, delay: 0.7 }}
           className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-16"
         >
-          <StatCard icon={<Leaf className="h-4 w-4" />} value="105+" label="Ayurvedic Foods" />
-          <StatCard icon={<BookOpen className="h-4 w-4" />} value="35+" label="Indian Recipes" />
-          <StatCard icon={<Activity className="h-4 w-4" />} value="6" label="Diet Templates" />
+          <StatCard icon={<Leaf className="h-4 w-4" />} value="430+" label="Global Foods" />
+          <StatCard icon={<BookOpen className="h-4 w-4" />} value="100+" label="Ayurveda Tips" />
+          <StatCard icon={<Activity className="h-4 w-4" />} value="26" label="Cuisines" />
           <StatCard icon={<Sparkles className="h-4 w-4" />} value="AI" label="Gemini Powered" />
         </motion.div>
 

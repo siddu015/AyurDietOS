@@ -2,41 +2,49 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Sidebar } from '@/components/sidebar/Sidebar';
+import { SidebarLayout } from '@/components/sidebar/SidebarLayout';
 
 export default function KnowledgeGraphLayout({ children }: { children: React.ReactNode }) {
     const router = useRouter();
     const pathname = usePathname();
     const [userName, setUserName] = useState('User');
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
     useEffect(() => {
-        const userId = localStorage.getItem('ayurdiet_user_id');
-        if (userId) {
-            setIsLoggedIn(true);
-            fetch(`/api/users?id=${userId}`)
-                .then(r => r.ok ? r.json() : null)
-                .then(data => { if (data?.user) setUserName(data.user.name); })
-                .catch(() => { });
-        }
+        (async () => {
+            try {
+                const meRes = await fetch('/api/users?me=1', { credentials: 'include' });
+                if (meRes.ok) {
+                    const data = await meRes.json();
+                    if (data?.user) {
+                        setIsLoggedIn(true);
+                        setUserName(data.user.name);
+                        localStorage.setItem('ayurdiet_user_id', data.user.id);
+                        return;
+                    }
+                }
+                const stored = localStorage.getItem('ayurdiet_user_id');
+                if (stored) {
+                    setIsLoggedIn(true);
+                    const r = await fetch(`/api/users?id=${stored}`, { credentials: 'include' });
+                    if (r.ok) {
+                        const d = await r.json();
+                        if (d?.user) setUserName(d.user.name);
+                    }
+                }
+            } catch { /* ignore */ }
+        })();
     }, []);
 
-    useEffect(() => {
-        const handleResize = () => {
-            const sidebar = document.querySelector('aside');
-            if (sidebar) setSidebarCollapsed(sidebar.clientWidth < 100);
-        };
-        const observer = new MutationObserver(handleResize);
-        const sidebar = document.querySelector('aside');
-        if (sidebar) {
-            observer.observe(sidebar, { attributes: true, attributeFilter: ['class', 'style'] });
-            handleResize();
-        }
-        return () => observer.disconnect();
-    }, [isLoggedIn]);
-
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/users', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'logout' }),
+            });
+        } catch { /* ignore */ }
         localStorage.removeItem('ayurdiet_user_id');
         router.push('/');
     };
@@ -45,26 +53,19 @@ export default function KnowledgeGraphLayout({ children }: { children: React.Rea
         return <>{children}</>;
     }
 
+    const crumb = pathname?.split('/').filter(Boolean).join(' / ');
+
     return (
-        <div className="min-h-screen bg-[#0a0a0a]">
-            <Sidebar
-                userName={userName}
-                userRole="patient"
-                onLogout={handleLogout}
-            />
-            <main
-                className="transition-all duration-300"
-                style={{ marginLeft: sidebarCollapsed ? '68px' : '240px' }}
-            >
-                <div className="p-6 lg:p-8">
-                    <div className="mb-8">
-                        <p className="text-xs text-white/30 uppercase tracking-wider mb-1">
-                            {pathname?.split('/').filter(Boolean).join(' / ')}
-                        </p>
-                    </div>
-                    {children}
+        <SidebarLayout
+            userName={userName}
+            onLogout={handleLogout}
+            header={
+                <div className="mb-8">
+                    <p className="text-xs text-white/30 uppercase tracking-wider mb-1">{crumb}</p>
                 </div>
-            </main>
-        </div>
+            }
+        >
+            {children}
+        </SidebarLayout>
     );
 }

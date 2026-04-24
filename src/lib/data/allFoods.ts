@@ -1,22 +1,29 @@
-// Combined foods database - 105 items
-// This exports the merged array from both expanded files
+// Combined foods database - 400+ items (Indian + International)
 
 import { expandedFoods } from './foods-expanded';
 import { moreFoods } from './foods-expanded-2';
+import { westernFoods } from './foods-international-western';
+import { asianFoods } from './foods-international-asian';
+import { mediterraneanFoods } from './foods-international-mediterranean';
+import { latamFoods } from './foods-international-latam';
 import { Food } from '../types';
+
+const allSources: Food[][] = [
+  expandedFoods,
+  moreFoods,
+  westernFoods,
+  asianFoods,
+  mediterraneanFoods,
+  latamFoods,
+];
 
 // Merge and deduplicate by id
 const foodMap = new Map<string, Food>();
-
-// Add base foods first
-expandedFoods.forEach(food => {
-  foodMap.set(food.id, food);
-});
-
-// Add/override with more foods
-moreFoods.forEach(food => {
-  foodMap.set(food.id, food);
-});
+for (const source of allSources) {
+  for (const food of source) {
+    foodMap.set(food.id, food);
+  }
+}
 
 // Export as array
 export const allFoods: Food[] = Array.from(foodMap.values());
@@ -38,6 +45,16 @@ export const categoryCounts = Object.entries(foodsByCategory).reduce((acc, [cate
   acc[category] = foods.length;
   return acc;
 }, {} as Record<string, number>);
+
+// Group by origin/cuisine
+export const foodsByOrigin = allFoods.reduce((acc, food) => {
+  const origin = food.origin || 'indian';
+  if (!acc[origin]) {
+    acc[origin] = [];
+  }
+  acc[origin].push(food);
+  return acc;
+}, {} as Record<string, Food[]>);
 
 
 

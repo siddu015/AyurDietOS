@@ -8,6 +8,7 @@ import {
   NutritionalInfo,
 } from '../types';
 import { getDoshaInfo, getCurrentSeason, getSeasonInfo } from '../data';
+import { getTipsForFood } from './tipMatcher';
 
 interface ANHConfig {
   ayurvedicWeight: number;  // Default 0.5
@@ -288,6 +289,12 @@ function generateInsights(
     warnings.push(
       `Note: ${food.name} should be avoided in: ${food.contraindications.join(', ')}`
     );
+  }
+
+  // Inject top Ayurveda tip if available
+  const tips = getTipsForFood(food.id, patient);
+  if (tips.length > 0) {
+    recommendations.push(tips[0].tip);
   }
   
   return { recommendations, warnings };

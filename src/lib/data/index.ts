@@ -1,14 +1,14 @@
 import { Food, HealthCondition, ViruddhaRule, PrakritiQuestion } from '../types';
-import { allFoods, foodsByCategory, categoryCounts } from './allFoods';
+import { allFoods, foodsByCategory, categoryCounts, foodsByOrigin } from './allFoods';
 import { recipes, Recipe, getRecipesByType, getRecipesForMeal, getRecipesByCategory, getRecipesByRegion, cookingMethodModifiers } from './recipes';
 import doshasData from './doshas.json';
 import conditionsData from './conditions.json';
 import viruddhaData from './viruddha.json';
 import prakritiQuizData from './prakritiQuiz.json';
 
-// Use expanded foods database (105+ items)
+// Use expanded foods database (400+ items)
 export const foods: Food[] = allFoods;
-export { foodsByCategory, categoryCounts };
+export { foodsByCategory, categoryCounts, foodsByOrigin };
 
 // Export recipes (35+ items)
 export { recipes, getRecipesByType, getRecipesForMeal, getRecipesByCategory, getRecipesByRegion, cookingMethodModifiers };
@@ -17,6 +17,9 @@ export type { Recipe };
 // Export meal templates (condition-specific presets)
 export { mealTemplates, getTemplateById, getTemplatesForCondition, getTemplatesForDosha } from './mealTemplates';
 export type { MealTemplate } from './mealTemplates';
+
+// Export Ayurveda tips
+export { ayurvedaTips } from './ayurvedaTips';
 
 export const doshas = doshasData;
 export const conditions: HealthCondition[] = conditionsData as HealthCondition[];

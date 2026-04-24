@@ -63,12 +63,30 @@ export function checkFoodPairCompatibility(
   const f2 = typeof food2 === 'string' ? getFoodById(food2) : food2;
 
   if (!f1 || !f2) {
+    // Unknown foods -- surface as an "unknown" mild warning rather than a silent green pass.
+    // A missing food ID is a data error, not a guarantee of compatibility.
+    const missingId = !f1
+      ? (typeof food1 === 'string' ? food1 : food1?.id)
+      : (typeof food2 === 'string' ? food2 : food2?.id);
     return {
-      isCompatible: true,
-      warnings: [],
+      isCompatible: false,
+      warnings: [{
+        rule: {
+          id: 'unknown_food',
+          food1: typeof food1 === 'string' ? food1 : food1?.id ?? 'unknown',
+          food2: typeof food2 === 'string' ? food2 : food2?.id ?? 'unknown',
+          type: 'samyoga',
+          severity: 'mild',
+          reason: `Could not resolve food "${missingId}" in the knowledge base; compatibility could not be verified.`,
+          reference: 'System',
+        },
+        food1: typeof food1 === 'string' ? food1 : food1?.name ?? 'unknown',
+        food2: typeof food2 === 'string' ? food2 : food2?.name ?? 'unknown',
+        message: `Unknown food (${missingId}) — compatibility could not be verified.`,
+      }],
       severeCount: 0,
       moderateCount: 0,
-      mildCount: 0,
+      mildCount: 1,
     };
   }
 

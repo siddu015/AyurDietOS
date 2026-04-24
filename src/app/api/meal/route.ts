@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
         constraintDetails: composedMeal.constraintDetails,
       },
       _meta: {
-        algorithm: 'csp-greedy-v1',
+        algorithm: 'greedy-anh-v1',
         timestamp: new Date().toISOString(),
         computeTimeMs: Math.round(elapsed * 100) / 100,
         constraintSatisfactionRate: composedMeal.constraintsSatisfied ? 100 : (

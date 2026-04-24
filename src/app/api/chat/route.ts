@@ -4,13 +4,14 @@ import { calculateANHScore, rankFoodsForPatient } from '@/lib/algorithms/anhScor
 import { composeMeal } from '@/lib/algorithms/mealComposer';
 import { checkFoodPairCompatibility } from '@/lib/algorithms/viruddhaCheck';
 import { findSubstitutes, type SubstitutionReason } from '@/lib/algorithms/substitution';
+import { getTipsForFood, getTipsForCondition, getTipsForDosha, getSeasonalTips, searchTips } from '@/lib/algorithms/tipMatcher';
 import { foods, conditions } from '@/lib/data';
 import type { PatientProfile, DietaryPreference, DoshaType } from '@/lib/types';
 
 const SYSTEM_PROMPT = `You are AyurOS Agent, the intelligent Ayurvedic diet consultant inside AyurDiet OS.
 
 ABOUT YOU:
-You combine classical Ayurvedic nutrition (Prakriti, Rasa, Virya, Vipaka, Dosha theory, Viruddha Aahara) with modern evidence-based nutritional science. You have access to a database of 105+ Indian foods and 35+ recipes, each scored using the ANH-Score (Ayur-Nutri Hybrid Score) algorithm personalized to the user.
+You combine classical Ayurvedic nutrition (Prakriti, Rasa, Virya, Vipaka, Dosha theory, Viruddha Aahara) with modern evidence-based nutritional science. You have access to a database of 400+ international foods and 35+ recipes, each scored using the ANH-Score (Ayur-Nutri Hybrid Score) algorithm personalized to the user.
 
 YOUR TOOLS (always use these -- never guess scores or make up numbers):
 - get_food_score: Score any food for this patient (call this for every food the user asks about)
@@ -20,6 +21,7 @@ YOUR TOOLS (always use these -- never guess scores or make up numbers):
 - find_substitutes: Suggest alternatives for a food (for allergies, preferences, or dosha)
 - get_condition_info: Get dietary guidance for a health condition
 - search_foods: Search the food database by name or category
+- get_ayurveda_tips: Get Ayurvedic remedies, supplement suggestions, and food-as-medicine tips. Use this when the user asks about natural remedies, supplements, home remedies, or ayurvedic tips for conditions/foods.
 
 PATIENT CONTEXT:
 {PATIENT_CONTEXT}
@@ -68,9 +70,10 @@ function buildPatientProfile(profile: Record<string, unknown>): PatientProfile {
     const prakriti = profile.prakriti as Record<string, unknown> | null;
     const health = profile.health as Record<string, unknown> | null;
 
-    const vataVal = ((prakriti?.vata as number) || 33) / 100;
-    const pittaVal = ((prakriti?.pitta as number) || 33) / 100;
-    const kaphaVal = ((prakriti?.kapha as number) || 34) / 100;
+    // Keep prakriti on the 0-100 scale everywhere (DB, API, UI, algorithms).
+    const vataVal = (prakriti?.vata as number) ?? 33;
+    const pittaVal = (prakriti?.pitta as number) ?? 33;
+    const kaphaVal = (prakriti?.kapha as number) ?? 34;
     const dominantDosha = (prakriti?.dominant as DoshaType) || determineDominant(vataVal, pittaVal, kaphaVal);
 
     const rawPrefs = (health?.dietary_preferences as string[]) || [];
@@ -106,7 +109,7 @@ function processToolCall(name: string, args: Record<string, unknown>, patientPro
             case 'get_food_score': {
                 const foodName = (args.food_name as string).toLowerCase();
                 const food = foods.find((f) => f.name.toLowerCase().includes(foodName) || f.id.includes(foodName));
-                if (!food) return `Food "${args.food_name}" not found in our database of 105+ Indian foods.`;
+                if (!food) return `Food "${args.food_name}" not found in our database of 430+ global foods.`;
                 const result = calculateANHScore(food, patientProfile);
                 return `**${food.name}** (${food.category})
 ANH Score: **${result.totalScore}/100**
@@ -189,6 +192,50 @@ ${result.warnings.length > 0 ? '\n⚠️ ' + result.warnings.join('\n⚠️ ') :
                 ).join('\n');
             }
 
+            case 'get_ayurveda_tips': {
+                const tipQuery = (args.query as string | undefined)?.toLowerCase();
+                const tipFood = args.food_name as string | undefined;
+                const tipCondition = args.condition as string | undefined;
+                const tipDosha = args.dosha as DoshaType | undefined;
+
+                let tips;
+                let heading = 'Ayurveda Tips';
+
+                if (tipFood) {
+                    const food = foods.find((f) => f.name.toLowerCase().includes(tipFood.toLowerCase()) || f.id.includes(tipFood.toLowerCase()));
+                    if (food) {
+                        tips = getTipsForFood(food.id, patientProfile);
+                        heading = `Ayurveda Tips for ${food.name}`;
+                    }
+                }
+                if (!tips && tipCondition) {
+                    const cond = conditions.find(c => c.id.includes(tipCondition.toLowerCase()) || c.name.toLowerCase().includes(tipCondition.toLowerCase()));
+                    tips = getTipsForCondition(cond?.id || tipCondition);
+                    heading = `Ayurveda Tips for ${cond?.name || tipCondition}`;
+                }
+                if (!tips && tipDosha) {
+                    tips = getTipsForDosha(tipDosha);
+                    heading = `Ayurveda Tips for ${tipDosha.charAt(0).toUpperCase() + tipDosha.slice(1)} Dosha`;
+                }
+                if (!tips && tipQuery) {
+                    tips = searchTips(tipQuery);
+                    heading = `Ayurveda Tips for "${tipQuery}"`;
+                }
+                if (!tips || tips.length === 0) {
+                    const seasonal = getSeasonalTips();
+                    if (seasonal.length > 0) {
+                        tips = seasonal;
+                        heading = 'Seasonal Ayurveda Tips';
+                    } else {
+                        return 'No specific Ayurveda tips found for that query. Try asking about a specific food, condition, or dosha.';
+                    }
+                }
+
+                return `**${heading}:**\n\n` + tips.slice(0, 8).map((t, i) =>
+                    `${i + 1}. **${t.ingredient}** — ${t.tip}${t.detail ? `\n   _${t.detail}_` : ''}${t.source ? `\n   📖 ${t.source}` : ''}`
+                ).join('\n\n');
+            }
+
             default:
                 return `Unknown tool: ${name}`;
         }
@@ -206,6 +253,7 @@ const TOOLS_DEFINITION = [
     { name: 'find_substitutes', description: 'Find substitute foods for a given food', parameters: { type: 'object', properties: { food_name: { type: 'string' }, reason: { type: 'string', enum: ['allergy', 'preference', 'dosha'] } }, required: ['food_name'] } },
     { name: 'get_condition_info', description: 'Get dietary info for a health condition', parameters: { type: 'object', properties: { condition: { type: 'string' } }, required: ['condition'] } },
     { name: 'search_foods', description: 'Search foods by name or category', parameters: { type: 'object', properties: { query: { type: 'string' } }, required: ['query'] } },
+    { name: 'get_ayurveda_tips', description: 'Get Ayurvedic remedies, supplement recommendations, and food-as-medicine tips. Use when the user asks about natural remedies, home remedies, supplements, or ayurvedic guidance for a food, condition, or dosha.', parameters: { type: 'object', properties: { query: { type: 'string', description: 'General search query for tips' }, food_name: { type: 'string', description: 'Food or ingredient name to get tips for' }, condition: { type: 'string', description: 'Health condition to get tips for' }, dosha: { type: 'string', enum: ['vata', 'pitta', 'kapha'], description: 'Dosha type to get tips for' } } } },
 ];
 
 export async function POST(request: NextRequest) {
@@ -258,10 +306,13 @@ export async function POST(request: NextRequest) {
         let geminiRes: Response | null = null;
         for (const model of MODELS) {
             geminiRes = await fetch(
-                `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+                `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,
                 {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': apiKey,
+                    },
                     body: JSON.stringify({
                         contents: chatMessages,
                         tools: [{ functionDeclarations: TOOLS_DEFINITION }],
@@ -286,7 +337,7 @@ export async function POST(request: NextRequest) {
 
         const effectiveProfile = patientProfile || {
             id: 'anonymous', name: 'User', age: 30, gender: 'other' as const,
-            prakriti: { vata: 0.33, pitta: 0.33, kapha: 0.34, dominant: 'vata' as const },
+            prakriti: { vata: 33, pitta: 33, kapha: 34, dominant: 'vata' as const },
             conditions: [], allergies: [], dietaryPreferences: [],
             goals: { weightGoal: 'maintain' as const, dailyCalorieTarget: 2000, proteinTarget: 60 },
         };
@@ -297,10 +348,13 @@ export async function POST(request: NextRequest) {
                 const toolResult = processToolCall(part.functionCall.name, part.functionCall.args, effectiveProfile);
 
                 const followUpRes = await fetch(
-                    `https://generativelanguage.googleapis.com/v1beta/models/${usedModel}:generateContent?key=${apiKey}`,
+                    `https://generativelanguage.googleapis.com/v1beta/models/${usedModel}:generateContent`,
                     {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'x-goog-api-key': apiKey,
+                        },
                         body: JSON.stringify({
                             contents: [
                                 ...chatMessages,
@@ -369,7 +423,7 @@ function handleWithoutGemini(message: string, userId: string | null, isQuotaExha
             const topFoods = processToolCall('score_top_foods', {}, patientProfile);
             response = `Based on your profile, here are your health considerations:\n\n${condInfo}\n\n---\n\n**Top Foods for Your Prakriti (${patientProfile.prakriti.dominant}):**\n\n${topFoods}`;
         } else {
-            response = `Your profile shows no specific health conditions. Your dominant dosha is **${patientProfile.prakriti.dominant}** (V:${Math.round(patientProfile.prakriti.vata * 100)}% P:${Math.round(patientProfile.prakriti.pitta * 100)}% K:${Math.round(patientProfile.prakriti.kapha * 100)}%).\n\n` + processToolCall('score_top_foods', {}, patientProfile);
+            response = `Your profile shows no specific health conditions. Your dominant dosha is **${patientProfile.prakriti.dominant}** (V:${Math.round(patientProfile.prakriti.vata)}% P:${Math.round(patientProfile.prakriti.pitta)}% K:${Math.round(patientProfile.prakriti.kapha)}%).\n\n` + processToolCall('score_top_foods', {}, patientProfile);
         }
     } else if (lowerMsg.includes('plan') || lowerMsg.includes('all day') || lowerMsg.includes('tomorrow') || lowerMsg.includes('full day') || lowerMsg.includes('entire day')) {
         const bf = processToolCall('compose_meal', { meal_type: 'breakfast' }, patientProfile);
@@ -407,12 +461,23 @@ function handleWithoutGemini(message: string, userId: string | null, isQuotaExha
     } else if (mentionedFoods.length === 1) {
         // Single food mentioned without clear intent — score it
         response = processToolCall('get_food_score', { food_name: mentionedFoods[0].name }, patientProfile);
+    } else if (lowerMsg.includes('remedy') || lowerMsg.includes('tip') || lowerMsg.includes('supplement') || lowerMsg.includes('ayurvedic') || lowerMsg.includes('home remedy') || lowerMsg.includes('natural')) {
+        if (mentionedFoods.length > 0) {
+            response = processToolCall('get_ayurveda_tips', { food_name: mentionedFoods[0].name }, patientProfile);
+        } else {
+            const condMatch = patientProfile.conditions.find(c => lowerMsg.includes(c.replace(/_/g, ' ')));
+            if (condMatch) {
+                response = processToolCall('get_ayurveda_tips', { condition: condMatch }, patientProfile);
+            } else {
+                response = processToolCall('get_ayurveda_tips', { dosha: patientProfile.prakriti.dominant }, patientProfile);
+            }
+        }
     } else if (lowerMsg.includes('top') || lowerMsg.includes('best') || lowerMsg.includes('recommend')) {
         response = processToolCall('score_top_foods', {}, patientProfile);
     } else if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('namaste') || lowerMsg.includes('hey') || lowerMsg.includes('help')) {
         response = `Namaste! I'm **AyurOS Agent**, your Ayurvedic diet consultant. Your dominant dosha is **${patientProfile.prakriti.dominant}**.\n\nHere's what I can help with:\n\n• **"Score rice for me"** -- get your personal ANH-Score for any food\n• **"Suggest a breakfast"** -- get a dosha-balanced meal\n• **"Can I eat milk and fish together?"** -- check for Viruddha Aahara\n• **"Top foods for me"** -- see your best food choices\n• **"Substitute for paneer"** -- find alternatives for any food`;
     } else if (lowerMsg.includes('who are you') || lowerMsg.includes('what are you') || lowerMsg.includes('about')) {
-        response = `I'm **AyurOS Agent**, the AI diet consultant built into AyurDiet OS.\n\nI combine **Ayurvedic principles** (Prakriti, Dosha theory, Rasa, Virya) with **modern nutritional science** to give you personalized diet guidance.\n\nI use the **ANH-Score algorithm** (Ayur-Nutri Hybrid Score) to rate foods on a 0-100 scale based on your unique constitution.\n\nYour Prakriti: **${patientProfile.prakriti.dominant}** dominant (V:${Math.round(patientProfile.prakriti.vata * 100)}% P:${Math.round(patientProfile.prakriti.pitta * 100)}% K:${Math.round(patientProfile.prakriti.kapha * 100)}%)`;
+        response = `I'm **AyurOS Agent**, the AI diet consultant built into AyurDiet OS.\n\nI combine **Ayurvedic principles** (Prakriti, Dosha theory, Rasa, Virya) with **modern nutritional science** to give you personalized diet guidance.\n\nI use the **ANH-Score algorithm** (Ayur-Nutri Hybrid Score) to rate foods on a 0-100 scale based on your unique constitution.\n\nYour Prakriti: **${patientProfile.prakriti.dominant}** dominant (V:${Math.round(patientProfile.prakriti.vata)}% P:${Math.round(patientProfile.prakriti.pitta)}% K:${Math.round(patientProfile.prakriti.kapha)}%)`;
     } else {
         const topFoods = processToolCall('score_top_foods', {}, patientProfile);
         response = '🌿 Here are the top foods recommended for your Prakriti:\n\n' + topFoods;

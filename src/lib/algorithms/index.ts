@@ -34,6 +34,17 @@ export {
 } from './recipeScore';
 export type { RecipeScoreResult, RecipeNutrition, RecipeAyurvedicProfile } from './recipeScore';
 
+// Ayurveda Tip Matcher
+export {
+  getTipsForFood,
+  getTipsForMeal,
+  getTipsForCondition,
+  getTipsForDosha,
+  getSeasonalTips,
+  getTipsByCategory,
+  searchTips,
+} from './tipMatcher';
+
 // Food Substitution Engine
 export {
   findSubstitutes,

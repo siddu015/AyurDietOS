@@ -39,6 +39,7 @@ export interface Food {
   name: string;
   nameHindi?: string;
   category: FoodCategory;
+  origin?: FoodOrigin;
   ayurvedic: AyurvedicProperties;
   nutrition: NutritionalInfo;
   servingSize: string;
@@ -47,9 +48,39 @@ export interface Food {
   contraindications?: string[];
 }
 
+export type FoodOrigin =
+  | 'indian'
+  | 'american'
+  | 'italian'
+  | 'french'
+  | 'british'
+  | 'german'
+  | 'greek'
+  | 'spanish'
+  | 'japanese'
+  | 'chinese'
+  | 'korean'
+  | 'thai'
+  | 'vietnamese'
+  | 'indonesian'
+  | 'turkish'
+  | 'lebanese'
+  | 'moroccan'
+  | 'ethiopian'
+  | 'egyptian'
+  | 'persian'
+  | 'mexican'
+  | 'brazilian'
+  | 'peruvian'
+  | 'colombian'
+  | 'argentinian'
+  | 'caribbean'
+  | 'universal';
+
 export type FoodCategory = 
   | 'grains'
   | 'pulses'
+  | 'legumes'
   | 'vegetables'
   | 'fruits'
   | 'dairy'
@@ -59,7 +90,8 @@ export type FoodCategory =
   | 'beverages'
   | 'meat'
   | 'seafood'
-  | 'sweets';
+  | 'sweets'
+  | 'condiments';
 
 export type Season = 'vasanta' | 'grishma' | 'varsha' | 'sharad' | 'hemanta' | 'shishira';
 // Spring, Summer, Monsoon, Autumn, Early Winter, Late Winter
@@ -84,8 +116,11 @@ export interface PatientProfile {
 }
 
 export interface DoshaPrakriti {
-  vata: number;   // 0-100 percentage
+  /** 0-100 percentage of Vata. vata + pitta + kapha should sum to ~100. */
+  vata: number;
+  /** 0-100 percentage of Pitta. */
   pitta: number;
+  /** 0-100 percentage of Kapha. */
   kapha: number;
   dominant: DoshaType;
   secondary?: DoshaType;
@@ -270,5 +305,26 @@ export interface KnowledgeEdge {
 export interface KnowledgeGraph {
   nodes: KnowledgeNode[];
   edges: KnowledgeEdge[];
+}
+
+// Ayurveda Tips Types
+export type TipCategory =
+  | 'spice_remedy'
+  | 'supplement'
+  | 'food_as_medicine'
+  | 'combination_tip'
+  | 'timing_tip'
+  | 'seasonal_tip';
+
+export interface AyurvedaTip {
+  id: string;
+  ingredient: string;
+  foodIds?: string[];
+  category: TipCategory;
+  conditions: string[];
+  doshaAffinity: DoshaType[];
+  tip: string;
+  detail?: string;
+  source?: string;
 }
 

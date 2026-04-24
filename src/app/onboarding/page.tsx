@@ -2,20 +2,23 @@
 
 import { useRouter } from 'next/navigation';
 import { OnboardingWizard, type OnboardingData } from '@/components/onboarding/OnboardingWizard';
+import { useToast } from '@/components/ui/toast';
 
 export default function OnboardingPage() {
     const router = useRouter();
+    const toast = useToast();
 
     const handleComplete = async (data: OnboardingData) => {
         try {
-            // 1. Register user
             const registerRes = await fetch('/api/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
                 body: JSON.stringify({
                     action: 'register',
                     name: data.name,
                     email: data.email,
+                    password: data.password,
                     age: data.age,
                     gender: data.gender,
                 }),
@@ -28,45 +31,47 @@ export default function OnboardingPage() {
 
             const { user } = await registerRes.json();
 
-            // 2. Save Prakriti
-            await fetch('/api/users', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'savePrakriti',
-                    userId: user.id,
-                    vata: data.vata,
-                    pitta: data.pitta,
-                    kapha: data.kapha,
-                    dominant: data.dominant,
-                    secondary: data.secondary,
+            await Promise.all([
+                fetch('/api/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        action: 'savePrakriti',
+                        userId: user.id,
+                        vata: data.vata,
+                        pitta: data.pitta,
+                        kapha: data.kapha,
+                        dominant: data.dominant,
+                        secondary: data.secondary,
+                    }),
                 }),
-            });
-
-            // 3. Save Health
-            await fetch('/api/users', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    action: 'saveHealth',
-                    userId: user.id,
-                    conditions: data.conditions,
-                    allergies: data.allergies,
-                    dietaryPreferences: data.dietaryPreferences,
-                    weightGoal: data.weightGoal,
-                    calorieTarget: data.calorieTarget,
-                    proteinTarget: data.proteinTarget,
+                fetch('/api/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        action: 'saveHealth',
+                        userId: user.id,
+                        conditions: data.conditions,
+                        allergies: data.allergies,
+                        dietaryPreferences: data.dietaryPreferences,
+                        weightGoal: data.weightGoal,
+                        calorieTarget: data.calorieTarget,
+                        proteinTarget: data.proteinTarget,
+                    }),
                 }),
-            });
+            ]);
 
-            // 4. Store session
             localStorage.setItem('ayurdiet_user_id', user.id);
-
-            // 5. Navigate to dashboard
+            toast.success('Welcome to AyurDiet!', `Your ${data.dominant}-dominant profile is ready.`);
             router.push('/patient/dashboard');
         } catch (err) {
             console.error('Onboarding failed:', err);
-            alert(err instanceof Error ? err.message : 'Something went wrong');
+            toast.error(
+                'Could not complete onboarding',
+                err instanceof Error ? err.message : 'Unexpected error. Please try again.'
+            );
         }
     };
 

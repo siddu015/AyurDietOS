@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -13,13 +12,12 @@ import {
     ChevronLeft,
     ChevronRight,
     Leaf,
-    Stethoscope,
     LogOut,
     ClipboardList,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const patientNavItems = [
+const navItems = [
     { href: '/patient/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/patient/chat', label: 'AyurOS Agent', icon: MessageCircle },
     { href: '/patient/meal-log', label: 'Meal Log', icon: ClipboardList },
@@ -29,24 +27,18 @@ const patientNavItems = [
     { href: '/patient/profile', label: 'My Profile', icon: User },
 ];
 
-const doctorNavItems = [
-    { href: '/doctor/dashboard', label: 'Patients', icon: Stethoscope },
-    { href: '/doctor/create-plan', label: 'Create Plan', icon: CalendarDays },
-    { href: '/foods', label: 'Food Browser', icon: UtensilsCrossed },
-    { href: '/knowledge-graph', label: 'Knowledge Graph', icon: Network },
-];
-
 interface SidebarProps {
     userName?: string;
-    userRole?: 'patient' | 'doctor';
     onLogout?: () => void;
+    collapsed: boolean;
+    onToggle: () => void;
 }
 
-export function Sidebar({ userName = 'User', userRole = 'patient', onLogout }: SidebarProps) {
-    const [collapsed, setCollapsed] = useState(false);
-    const pathname = usePathname();
+export const SIDEBAR_W_OPEN = 240;
+export const SIDEBAR_W_COLLAPSED = 68;
 
-    const navItems = userRole === 'doctor' ? doctorNavItems : patientNavItems;
+export function Sidebar({ userName = 'User', onLogout, collapsed, onToggle }: SidebarProps) {
+    const pathname = usePathname();
 
     return (
         <aside
@@ -55,7 +47,6 @@ export function Sidebar({ userName = 'User', userRole = 'patient', onLogout }: S
                 collapsed ? 'w-[68px]' : 'w-[240px]'
             )}
         >
-            {/* Header */}
             <div className="flex items-center gap-3 p-4 border-b border-white/10">
                 <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#4a7c59] to-[#c9a227] flex items-center justify-center flex-shrink-0">
                     <Leaf className="h-4 w-4 text-white" />
@@ -68,7 +59,6 @@ export function Sidebar({ userName = 'User', userRole = 'patient', onLogout }: S
                 )}
             </div>
 
-            {/* Navigation */}
             <nav className="flex-1 py-4 px-2 space-y-1 overflow-y-auto">
                 {navItems.map((item) => {
                     const isActive = pathname === item.href;
@@ -92,7 +82,6 @@ export function Sidebar({ userName = 'User', userRole = 'patient', onLogout }: S
                 })}
             </nav>
 
-            {/* Footer - User */}
             <div className="border-t border-white/10 p-3">
                 {!collapsed && (
                     <div className="flex items-center gap-3 px-2 py-2 mb-2">
@@ -101,7 +90,7 @@ export function Sidebar({ userName = 'User', userRole = 'patient', onLogout }: S
                         </div>
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-white truncate">{userName}</p>
-                            <p className="text-xs text-white/50 capitalize">{userRole}</p>
+                            <p className="text-xs text-white/50">Signed in</p>
                         </div>
                     </div>
                 )}
@@ -119,9 +108,9 @@ export function Sidebar({ userName = 'User', userRole = 'patient', onLogout }: S
                 )}
             </div>
 
-            {/* Collapse Toggle */}
             <button
-                onClick={() => setCollapsed(!collapsed)}
+                onClick={onToggle}
+                aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
                 className="absolute -right-3 top-20 w-6 h-6 rounded-full bg-[#2a2a2a] border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-[#3a3a3a] transition-all"
             >
                 {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}

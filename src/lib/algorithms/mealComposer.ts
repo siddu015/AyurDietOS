@@ -37,7 +37,7 @@ const DEFAULT_CONSTRAINTS: MealCompositionConstraints = {
 
 /**
  * Dynamic Meal Composition Engine
- * Uses a greedy/constraint satisfaction approach to build balanced meals
+ * Uses a greedy, category-guided approach to build meals that satisfy
  */
 export function composeMeal(
   patient: PatientProfile,
@@ -376,16 +376,18 @@ export function optimizeMeal(
   const optimizedMeal = createMealFromItems(optimizedItems, currentMeal.type);
   const cfg = { ...DEFAULT_CONSTRAINTS, ...constraints };
 
+  const constraintDetails = {
+    caloriesOk: optimizedMeal.totalNutrition.calories <= cfg.maxCalories,
+    proteinOk: optimizedMeal.totalNutrition.protein >= cfg.minProtein,
+    rasaOk: optimizedMeal.rasaCoverage.length >= cfg.minRasaCount,
+    doshaOk: optimizedMeal.overallDoshaEffect[cfg.targetDosha] <= 0,
+  };
+
   return {
     meal: optimizedMeal,
     totalANHScore: calculateMealANHScore(optimizedItems, patient),
-    constraintsSatisfied: true,
-    constraintDetails: {
-      caloriesOk: optimizedMeal.totalNutrition.calories <= cfg.maxCalories,
-      proteinOk: optimizedMeal.totalNutrition.protein >= cfg.minProtein,
-      rasaOk: optimizedMeal.rasaCoverage.length >= cfg.minRasaCount,
-      doshaOk: optimizedMeal.overallDoshaEffect[cfg.targetDosha] <= 0,
-    },
+    constraintsSatisfied: Object.values(constraintDetails).every(Boolean),
+    constraintDetails,
   };
 }
 

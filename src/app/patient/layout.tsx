@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { Sidebar } from '@/components/sidebar/Sidebar';
+import { SidebarLayout } from '@/components/sidebar/SidebarLayout';
 
 interface UserData {
     id: string;
@@ -15,50 +15,46 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
     const pathname = usePathname();
     const [user, setUser] = useState<UserData | null>(null);
     const [loading, setLoading] = useState(true);
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
     useEffect(() => {
-        const userId = localStorage.getItem('ayurdiet_user_id');
-        if (!userId) {
-            router.push('/login');
-            return;
-        }
-
-        fetch(`/api/users?id=${userId}`)
-            .then((res) => {
+        (async () => {
+            try {
+                const meRes = await fetch('/api/users?me=1', { credentials: 'include' });
+                if (meRes.ok) {
+                    const data = await meRes.json();
+                    if (data?.user) {
+                        setUser(data.user);
+                        localStorage.setItem('ayurdiet_user_id', data.user.id);
+                        setLoading(false);
+                        return;
+                    }
+                }
+                const stored = localStorage.getItem('ayurdiet_user_id');
+                if (!stored) {
+                    router.push('/login');
+                    return;
+                }
+                const res = await fetch(`/api/users?id=${stored}`, { credentials: 'include' });
                 if (!res.ok) throw new Error('Not found');
-                return res.json();
-            })
-            .then((data) => {
+                const data = await res.json();
                 setUser(data.user);
                 setLoading(false);
-            })
-            .catch(() => {
+            } catch {
                 localStorage.removeItem('ayurdiet_user_id');
                 router.push('/login');
-            });
+            }
+        })();
     }, [router]);
 
-    // Listen for sidebar collapse via a custom event from the Sidebar component
-    useEffect(() => {
-        const handleResize = () => {
-            const sidebar = document.querySelector('aside');
-            if (sidebar) {
-                setSidebarCollapsed(sidebar.clientWidth < 100);
-            }
-        };
-
-        const observer = new MutationObserver(handleResize);
-        const sidebar = document.querySelector('aside');
-        if (sidebar) {
-            observer.observe(sidebar, { attributes: true, attributeFilter: ['class', 'style'] });
-            handleResize();
-        }
-
-        return () => observer.disconnect();
-    }, [loading]);
-
-    const handleLogout = () => {
+    const handleLogout = async () => {
+        try {
+            await fetch('/api/users', {
+                method: 'POST',
+                credentials: 'include',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'logout' }),
+            });
+        } catch { /* ignore */ }
         localStorage.removeItem('ayurdiet_user_id');
         router.push('/');
     };
@@ -74,27 +70,19 @@ export default function PatientLayout({ children }: { children: React.ReactNode 
         );
     }
 
+    const crumb = pathname?.split('/').filter(Boolean).join(' / ');
+
     return (
-        <div className="min-h-screen bg-[#0a0a0a]">
-            <Sidebar
-                userName={user?.name || 'User'}
-                userRole="patient"
-                onLogout={handleLogout}
-            />
-            <main
-                className="transition-all duration-300"
-                style={{ marginLeft: sidebarCollapsed ? '68px' : '240px' }}
-            >
-                <div className="p-6 lg:p-8">
-                    {/* Page header showing current section */}
-                    <div className="mb-8">
-                        <p className="text-xs text-white/30 uppercase tracking-wider mb-1">
-                            {pathname?.split('/').filter(Boolean).join(' / ')}
-                        </p>
-                    </div>
-                    {children}
+        <SidebarLayout
+            userName={user?.name || 'User'}
+            onLogout={handleLogout}
+            header={
+                <div className="mb-8">
+                    <p className="text-xs text-white/30 uppercase tracking-wider mb-1">{crumb}</p>
                 </div>
-            </main>
-        </div>
+            }
+        >
+            {children}
+        </SidebarLayout>
     );
 }

@@ -12,6 +12,8 @@ import {
   Sparkles,
   CalendarDays,
   ArrowRight,
+  AlertTriangle,
+  RefreshCw,
 } from 'lucide-react';
 import { getCurrentSeason, getSeasonInfo } from '@/lib/data';
 
@@ -24,18 +26,36 @@ interface ProfileData {
 export default function PatientDashboardPage() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const loadProfile = () => {
     const userId = localStorage.getItem('ayurdiet_user_id');
-    if (!userId) return;
-
+    if (!userId) {
+      setError('Not signed in');
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setError(null);
     fetch(`/api/users?id=${userId}`)
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
       .then((data) => {
+        if (!data?.user) throw new Error('Profile not found');
         setProfile(data);
         setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch((e) => {
+        setError(e?.message || 'Failed to load profile');
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    loadProfile();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (loading) {
@@ -46,7 +66,33 @@ export default function PatientDashboardPage() {
     );
   }
 
-  if (!profile) return null;
+  if (error || !profile) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[60vh] text-center">
+        <div className="w-14 h-14 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center mb-4">
+          <AlertTriangle className="h-6 w-6 text-red-400" />
+        </div>
+        <h2 className="text-xl font-bold text-white mb-2">Couldn&apos;t load your dashboard</h2>
+        <p className="text-sm text-white/50 mb-6 max-w-md">
+          {error || 'Your profile could not be loaded. This usually resolves with a quick retry.'}
+        </p>
+        <div className="flex gap-3">
+          <button
+            onClick={loadProfile}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#c9a227] hover:bg-[#d4ae2f] text-white text-sm font-medium transition-colors"
+          >
+            <RefreshCw className="h-4 w-4" /> Retry
+          </button>
+          <Link
+            href="/onboarding"
+            className="px-5 py-2.5 rounded-xl border border-white/15 text-white/70 hover:bg-white/5 text-sm font-medium transition-colors"
+          >
+            Re-run onboarding
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const currentSeason = getCurrentSeason();
   const seasonInfo = getSeasonInfo(currentSeason);
@@ -133,7 +179,7 @@ export default function PatientDashboardPage() {
             icon={<MessageCircle className="h-5 w-5" />}
             title="AyurOS Agent"
             description="Ask about foods, meals, or get personalized Ayurvedic recommendations"
-            gradient="from-[#10b981] to-[#059669]"
+            gradient="from-[#4a7c59] to-[#7ab08a]"
             tag="AI Powered"
           />
           <QuickActionCard
@@ -147,7 +193,7 @@ export default function PatientDashboardPage() {
             href="/foods"
             icon={<UtensilsCrossed className="h-5 w-5" />}
             title="Browse Foods"
-            description="Explore 105+ foods scored for your constitution"
+            description="Explore 430+ global foods scored for your constitution"
             gradient="from-[#d35400] to-[#e67e22]"
           />
         </div>
@@ -278,7 +324,7 @@ function QuickActionCard({
             {icon}
           </div>
           {tag && (
-            <span className="text-[10px] font-medium text-[#10b981] bg-[#10b981]/10 px-2 py-0.5 rounded-full border border-[#10b981]/20">
+            <span className="text-[10px] font-medium text-[#c9a227] bg-[#c9a227]/10 px-2 py-0.5 rounded-full border border-[#c9a227]/20">
               {tag}
             </span>
           )}

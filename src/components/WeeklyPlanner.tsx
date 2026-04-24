@@ -5,8 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Food, PatientProfile, FoodCategory } from '@/lib/types';
 import { Recipe } from '@/lib/data/recipes';
 import { MealTemplate, MealTemplateSlot } from '@/lib/data/mealTemplates';
-import { calculateANHScore, calculateRecipeScore } from '@/lib/algorithms';
-import { Search, Plus, X, Copy, Trash2, Flame, Beef, Leaf, Star, AlertTriangle, Check, Info } from 'lucide-react';
+import { calculateANHScore, calculateRecipeScore, getTipsForMeal } from '@/lib/algorithms';
+import { Search, Plus, X, Copy, Trash2, Flame, Beef, Leaf, Star, AlertTriangle, Check, Info, Sparkles } from 'lucide-react';
 
 interface MealSlot {
   id: string;
@@ -470,6 +470,26 @@ export function WeeklyPlanner({
                     })}
                   </div>
                 )}
+
+                {items.length > 0 && (() => {
+                  const foodIds = items.filter(i => i.type === 'food').map(i => i.id);
+                  if (foodIds.length === 0) return null;
+                  const mealTips = getTipsForMeal(foodIds, patient);
+                  if (mealTips.length === 0) return null;
+                  return (
+                    <div className="mt-2 p-2.5 rounded-lg bg-amber-500/5 border border-amber-500/10">
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        <Sparkles className="w-3 h-3 text-amber-400/60" />
+                        <span className="text-[10px] font-medium text-amber-400/70 uppercase tracking-wider">Ayurveda Tip</span>
+                      </div>
+                      {mealTips.slice(0, 2).map(tip => (
+                        <p key={tip.id} className="text-[11px] text-amber-200/50 leading-relaxed mb-1 last:mb-0">
+                          {tip.tip}
+                        </p>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
             );
           })}

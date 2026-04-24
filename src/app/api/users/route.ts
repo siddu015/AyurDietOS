@@ -3,13 +3,31 @@ import {
     createUser, getUserByEmail, getUserById, updateUser,
     savePrakriti, getLatestPrakriti, saveUserHealth, getUserHealth, getFullProfile
 } from '@/lib/db';
+import { hashPassword, verifyPassword } from '@/lib/auth/password';
+import { issueSession, revokeSession, getSessionUserId } from '@/lib/auth/session';
+
+/** Strip password_hash from any raw user row before returning. */
+function sanitizeUser<T extends Record<string, unknown>>(user: T): Omit<T, 'password_hash'> {
+    if (!user) return user;
+    const { password_hash: _ph, ...rest } = user as T & { password_hash?: unknown };
+    void _ph;
+    return rest;
+}
 
 export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     const email = searchParams.get('email');
+    const me = searchParams.get('me');
 
     try {
+        if (me === '1') {
+            const userId = await getSessionUserId();
+            if (!userId) return NextResponse.json({ user: null }, { status: 200 });
+            const profile = getFullProfile(userId);
+            return NextResponse.json(profile ?? { user: null });
+        }
+
         if (id) {
             const profile = getFullProfile(id);
             if (!profile) {
@@ -23,10 +41,10 @@ export async function GET(request: NextRequest) {
             if (!user) {
                 return NextResponse.json({ error: 'User not found' }, { status: 404 });
             }
-            return NextResponse.json({ user });
+            return NextResponse.json({ user: sanitizeUser(user) });
         }
 
-        return NextResponse.json({ error: 'Provide id or email' }, { status: 400 });
+        return NextResponse.json({ error: 'Provide id, email, or me=1' }, { status: 400 });
     } catch (error) {
         console.error('User API GET error:', error);
         return NextResponse.json({ error: 'Server error' }, { status: 500 });
@@ -40,58 +58,106 @@ export async function POST(request: NextRequest) {
 
         switch (action) {
             case 'register': {
-                const { name, email, age, gender } = body;
-                if (!name || !email) {
-                    return NextResponse.json({ error: 'Name and email are required' }, { status: 400 });
+                const { name, email, password, age, gender } = body;
+                if (!name || typeof name !== 'string' || name.trim().length < 2) {
+                    return NextResponse.json({ error: 'Valid name required' }, { status: 400 });
                 }
-                // Check if email already exists
-                const existing = getUserByEmail(email);
+                if (!email || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    return NextResponse.json({ error: 'Valid email required' }, { status: 400 });
+                }
+                if (!password || typeof password !== 'string' || password.length < 8) {
+                    return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 400 });
+                }
+                if (age !== undefined && age !== null && (typeof age !== 'number' || age < 0 || age > 120)) {
+                    return NextResponse.json({ error: 'Age must be 0-120' }, { status: 400 });
+                }
+                const existing = getUserByEmail(email.toLowerCase().trim());
                 if (existing) {
                     return NextResponse.json({ error: 'Email already registered' }, { status: 409 });
                 }
-                const user = createUser({ name, email, age, gender });
-                return NextResponse.json({ user }, { status: 201 });
+                const passwordHash = await hashPassword(password);
+                const user = createUser({
+                    name: name.trim(),
+                    email: email.toLowerCase().trim(),
+                    passwordHash,
+                    age,
+                    gender,
+                });
+                await issueSession(user.id);
+                return NextResponse.json({ user: sanitizeUser(user as Record<string, unknown>) }, { status: 201 });
             }
 
             case 'login': {
-                const { email } = body;
-                if (!email) {
-                    return NextResponse.json({ error: 'Email is required' }, { status: 400 });
+                const { email, password } = body;
+                if (!email || !password) {
+                    return NextResponse.json({ error: 'Email and password required' }, { status: 400 });
                 }
-                const user = getUserByEmail(email);
+                const user = getUserByEmail(String(email).toLowerCase().trim());
+                // Uniform error message to avoid account enumeration
+                const generic = { error: 'Invalid email or password' };
                 if (!user) {
-                    return NextResponse.json({ error: 'User not found' }, { status: 404 });
+                    return NextResponse.json(generic, { status: 401 });
                 }
-                return NextResponse.json({ user });
+                const ok = await verifyPassword(String(password), user.password_hash as string | null);
+                if (!ok) {
+                    return NextResponse.json(generic, { status: 401 });
+                }
+                await issueSession(user.id as string);
+                return NextResponse.json({ user: sanitizeUser(user) });
+            }
+
+            case 'logout': {
+                await revokeSession();
+                return NextResponse.json({ ok: true });
             }
 
             case 'update': {
+                const sessionUserId = await getSessionUserId();
                 const { userId, name, age, gender } = body;
-                if (!userId) {
-                    return NextResponse.json({ error: 'userId is required' }, { status: 400 });
+                const targetId = userId ?? sessionUserId;
+                if (!targetId) {
+                    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
                 }
-                updateUser(userId, { name, age, gender });
-                const user = getUserById(userId);
-                return NextResponse.json({ user });
+                if (sessionUserId && sessionUserId !== targetId) {
+                    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+                }
+                updateUser(targetId, { name, age, gender });
+                const user = getUserById(targetId);
+                return NextResponse.json({ user: user ? sanitizeUser(user) : null });
             }
 
             case 'savePrakriti': {
+                const sessionUserId = await getSessionUserId();
                 const { userId, vata, pitta, kapha, dominant, secondary } = body;
-                if (!userId) {
+                const targetId = userId ?? sessionUserId;
+                if (!targetId) {
                     return NextResponse.json({ error: 'userId is required' }, { status: 400 });
                 }
-                const id = savePrakriti({ userId, vata, pitta, kapha, dominant, secondary });
-                const prakriti = getLatestPrakriti(userId);
+                if (sessionUserId && sessionUserId !== targetId) {
+                    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+                }
+                for (const [k, v] of [['vata', vata], ['pitta', pitta], ['kapha', kapha]] as const) {
+                    if (typeof v !== 'number' || v < 0 || v > 100) {
+                        return NextResponse.json({ error: `${k} must be 0-100` }, { status: 400 });
+                    }
+                }
+                const id = savePrakriti({ userId: targetId, vata, pitta, kapha, dominant, secondary });
+                const prakriti = getLatestPrakriti(targetId);
                 return NextResponse.json({ id, prakriti }, { status: 201 });
             }
 
             case 'saveHealth': {
+                const sessionUserId = await getSessionUserId();
                 const { userId, conditions, allergies, dietaryPreferences, weightGoal, calorieTarget, proteinTarget } = body;
-                if (!userId) {
+                const targetId = userId ?? sessionUserId;
+                if (!targetId) {
                     return NextResponse.json({ error: 'userId is required' }, { status: 400 });
                 }
-                saveUserHealth({ userId, conditions, allergies, dietaryPreferences, weightGoal, calorieTarget, proteinTarget });
-                const health = getUserHealth(userId);
+                if (sessionUserId && sessionUserId !== targetId) {
+                    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+                }
+                saveUserHealth({ userId: targetId, conditions, allergies, dietaryPreferences, weightGoal, calorieTarget, proteinTarget });
+                const health = getUserHealth(targetId);
                 return NextResponse.json({ health });
             }
 
